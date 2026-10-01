@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+.DS_Store
+web/_vorschau.html
+ios/build/
+ios/*.xcodeproj/
+ios/Iris/Info.plist
+ios/IrisWatch/Info.plist
+tools/orbfilm/.build/
+
+# Persoenliche Apple-Identitaet (Vorlage: apple.env.beispiel)
+apple.env
+
+# Deine Rechner (Vorlage: rechner.env.beispiel)
+rechner.env
+
+# Laufzeitdaten des Bewohners (Journal, Gespraeche) - entstehen auch bei Tests
+bewohner/werkstatt/
+
+# Was bei einer Uebergabe geschwaerzt wird (Vorlage: schwaerzen.beispiel.json)
+schwaerzen.json
+
+# Gedaechtnis des Bewohners - lokale Sicherung, nie im Git (siehe bewohner/GEDAECHTNIS.md)
+bewohner/sicherung/

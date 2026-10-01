@@ -1,0 +1,33 @@
+# Was der Bewohner ausser der Standardbibliothek braucht.
+#   python -m pip install -r bewohner/requirements.txt
+#
+# Getrennt von ../requirements.txt, weil der Bewohner ein eigener, optionaler
+# Teil ist: er laeuft auf einem Windows-PC mit Grafikkarte neben einem lokalen
+# Sprachmodell, die Bruecke laeuft ueberall. Wer nur iris will, braucht diese
+# Datei nicht. Was er sonst noch braucht (Ollama, gpt-oss) steht in
+# bewohner/GEDAECHTNIS.md.
+
+# Pflicht: Gespraeche mit dem lokalen Modell ueber Ollama, das Gedaechtnis.
+# Das laedt er beim Start.
+httpx
+
+# Wahrnehmung. Fehlen sie, sieht er keine Bilder und liest keine PDFs - der
+# Rest laeuft weiter (die Einfuhren sind abgesichert).
+pillow
+pypdf
+
+# Sprachausgabe - schwer (PyTorch, mehrere GB) und nur fuer den, der ihn
+# sprechen hoeren will. Laeuft ueblicherweise in einer eigenen Umgebung
+# (~/tts-test, einstellbar als "bewohner": {"tts": ...}). Erst geladen, wenn
+# er spricht; ohne sie antwortet er stumm.
+# chatterbox-tts
+# torch
+# librosa
+# soundfile
+# numpy
+# noisereduce
+# num2words
+
+# chat.py, ein eigenstaendiger MCP-Client zum Ausprobieren. Der Bewohner
+# selbst braucht ihn nicht.
+# mcp

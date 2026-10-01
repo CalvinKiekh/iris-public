@@ -1,0 +1,12 @@
+# Was die Bruecke ausser der Standardbibliothek braucht.
+#   python3 -m pip install -r requirements.txt
+#
+# Nur die Bruecke. Der Bewohner hat seine eigene Liste: bewohner/requirements.txt.
+
+# Pflicht: Dateien zwischen Rechnern werden verschluesselt uebertragen
+# (bridge/transfer.py), und die Bruecke laedt das beim Start.
+cryptography
+
+# Optional, fuer Push-Nachrichten an die iOS-App (bridge/push.py). Fehlen sie,
+# versucht die Bruecke es ueber curl und openssl.
+# httpx[http2]

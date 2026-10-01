@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body{margin:0;background:#0e0e11;color:#f5f4f2;
+      font-family:"Plus Jakarta Sans",-apple-system,system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased}
+    a{color:#ff9d5c} a:hover{color:#ffbc8a}
+    .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+    /* Objekte statt Glas: solide Flächen, die durch Schatten schweben */
+    .obj{background:#17171c;border-radius:26px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.055),
+        0 1px 2px rgba(0,0,0,.5),
+        0 18px 40px -18px rgba(0,0,0,.9);}
+    @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    .rise{animation:rise .58s cubic-bezier(.16,.84,.28,1) backwards}
+  </style>
+</helmet>
+
+<!-- VERWORFEN. Zweiter Anlauf für das Handy, bevor die Tinte und der
+     Messingrand gefunden waren: warmes Licht, aber noch harte Kanten und
+     eine Freigabe, die sich über den Verlauf legt statt in ihm zu liegen.
+     Bleibt als Beleg, warum die Freigabe heute im Verlauf steht. -->
+
+<div style="width:560px;height:820px;background:#0e0e11;position:relative;overflow:hidden;
+  display:flex;flex-direction:column">
+
+  <div style="position:absolute;top:-140px;right:-100px;width:420px;height:380px;
+    background:radial-gradient(closest-side,rgba(255,140,70,.16),transparent 70%);
+    filter:blur(30px);pointer-events:none"></div>
+
+  <div style="padding:22px 22px 0;position:relative;z-index:2">
+    <div class="rise" style="display:flex;align-items:center;gap:13px;padding:0 4px">
+      <div style="width:36px;height:36px;border-radius:13px;flex:none;display:grid;
+        place-items:center;background:linear-gradient(155deg,#ff9d5c,#ff6b3d);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.45),
+          0 8px 20px -6px rgba(255,110,60,.55)">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="rgba(30,10,0,.35)" stroke-width="1.6"/>
+          <circle cx="12" cy="12" r="3.4" fill="#2a1004"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:18px;font-weight:700;letter-spacing:-.03em;
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Dashboard bauen</div>
+        <div style="font-size:12px;color:rgba(245,244,242,.42);margin-top:1px">iris · 27 % belegt</div>
+      </div>
+      <button style="width:34px;height:34px;border-radius:12px;flex:none;border:none;
+        background:#1d1d23;display:grid;place-items:center;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.06)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(245,244,242,.55)"
+          stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/>
+          <circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+    </div>
+  </div>
+
+  <div style="flex:1;padding:20px 22px;display:flex;flex-direction:column;gap:14px;
+    position:relative;z-index:2;overflow:hidden">
+
+    <div class="rise" style="animation-delay:.05s;align-self:flex-end;max-width:80%;
+      background:#22222a;border-radius:24px 24px 8px 24px;padding:14px 18px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 24px -12px rgba(0,0,0,.8)">
+      <div style="font-size:15.5px;line-height:1.55">Bau das Dashboard und zeig mir,
+        was gerade läuft.</div>
+    </div>
+
+    <div class="rise" style="animation-delay:.11s;padding:4px 6px">
+      <div style="font-size:16.5px;line-height:1.7;color:rgba(245,244,242,.93)">Die Registry
+        steht. Für die Ansicht lege ich eine Datei an — dafür brauche ich deine Freigabe.</div>
+    </div>
+
+    <div class="rise obj" style="animation-delay:.16s;padding:13px 16px;border-radius:18px;
+      display:flex;align-items:center;gap:12px">
+      <div style="width:28px;height:28px;border-radius:10px;flex:none;display:grid;
+        place-items:center;background:#22222a">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff9d5c"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M8 7h7"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13.5px;font-weight:600">Read</div>
+        <div class="mono" style="font-size:11.5px;color:rgba(245,244,242,.38);margin-top:1px;
+          overflow:hidden;text-overflow:ellipsis">bridge/heartbeat.py</div>
+      </div>
+      <span class="mono" style="font-size:11px;color:rgba(245,244,242,.26);flex:none">184</span>
+    </div>
+
+    <!-- Freigabe: das hellste Objekt der Seite, hebt sich physisch ab -->
+    <div class="rise" style="animation-delay:.24s;background:#f5f4f2;color:#12100e;
+      border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:20px;
+      box-shadow:0 2px 4px rgba(0,0,0,.4),0 32px 70px -24px rgba(0,0,0,.95)">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:7px;height:7px;border-radius:50%;background:#ff6b3d"></span>
+          <span class="mono" style="font-size:10px;letter-spacing:.16em;font-weight:500;
+            color:#8a7f75">FREIGABE</span>
+        </div>
+        <div style="font-size:26px;font-weight:800;letter-spacing:-.035em;margin-top:12px;
+          line-height:1.1">Datei anlegen</div>
+        <div class="mono" style="font-size:12.5px;color:#6e645b;margin-top:9px">web/dashboard.js
+          · 84 Zeilen</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button style="flex:1;padding:15px;border-radius:17px;font-size:15px;font-weight:600;
+          background:#e8e5e0;border:none;color:#3a352f;font-family:inherit">Ablehnen</button>
+        <button style="flex:1.5;padding:15px;border-radius:17px;font-size:15px;font-weight:700;
+          background:linear-gradient(160deg,#ff9d5c,#ff6b3d);border:none;color:#fff;
+          font-family:inherit;
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.4),
+            0 10px 24px -8px rgba(255,110,60,.65)">Erlauben</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="padding:0 22px 24px;position:relative;z-index:2">
+    <div style="background:#17171c;border-radius:22px;padding:6px 6px 6px 18px;display:flex;
+      align-items:center;gap:9px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 12px 28px -14px rgba(0,0,0,.85)">
+      <span style="flex:1;color:rgba(245,244,242,.32);font-size:15px">Auftrag …</span>
+      <button style="width:42px;height:42px;border-radius:16px;flex:none;border:none;
+        display:grid;place-items:center;background:#22222a">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(245,244,242,.6)"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg></button>
+      <button style="width:42px;height:42px;border-radius:16px;flex:none;border:none;
+        display:grid;place-items:center;background:linear-gradient(160deg,#ff9d5c,#ff6b3d);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 20px -6px rgba(255,110,60,.6)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff"
+          stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:6px 22px;z-index:3">
+    <div class="mono" style="font-size:9.5px;letter-spacing:.14em;
+      color:rgba(245,244,242,.2);text-align:center">B · STUDIO</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

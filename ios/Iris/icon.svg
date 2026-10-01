@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="grund" cx="28%" cy="16%" r="100%">
+      <stop offset="0" stop-color="#4a4239"/><stop offset=".55" stop-color="#2e2a25"/>
+      <stop offset="1" stop-color="#1a1714"/></radialGradient>
+    <linearGradient id="messing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4e3bb"/><stop offset=".5" stop-color="#e8d3a4"/>
+      <stop offset="1" stop-color="#a98752"/></linearGradient>
+    <radialGradient id="schein" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e8d3a4" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#e8d3a4" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pupille" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#f7ecd0"/><stop offset=".6" stop-color="#d6b678"/>
+      <stop offset="1" stop-color="#8e7143"/></radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#grund)"/>
+  <circle cx="512" cy="512" r="360" fill="url(#schein)"/>
+  <circle cx="512" cy="512" r="248" fill="none" stroke="url(#messing)" stroke-width="20"/>
+  <circle cx="512" cy="512" r="118" fill="url(#pupille)"/>
+</svg>

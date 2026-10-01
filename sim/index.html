@@ -1,0 +1,74 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brillen-Simulator</title>
+<link rel="stylesheet" href="/sim/sim.css">
+
+<h1>Brillen-Simulator</h1>
+<p class="sub">
+  Zeigt eine App so, wie sie auf der Brille ankommt: monochrom grün, in echter
+  Panelgröße. Was hier nicht lesbar ist, ist es dort auch nicht.
+</p>
+
+<div class="group">
+  <h2>Gerät</h2>
+  <select id="profile"></select>
+  <span id="est" class="est" hidden>geschätzt</span>
+  <label>Zoom</label>
+  <select id="zoom">
+    <option value="1" selected>1× (echte Größe)</option>
+    <option value="1.5">1,5×</option>
+    <option value="2">2×</option>
+    <option value="3">3×</option>
+  </select>
+  <button id="mono" class="on">monochrom</button>
+  <button id="glow" class="on">Raster</button>
+  <label>Bildrate</label>
+  <select id="fps">
+    <option value="0">frei</option>
+    <option value="15">15 fps</option>
+    <option value="10">10 fps</option>
+    <option value="5" selected>5 fps</option>
+    <option value="2">2 fps</option>
+    <option value="1">1 fps</option>
+  </select>
+</div>
+
+<div class="group">
+  <h2>App</h2>
+  <select id="app"></select>
+  <button id="reload">neu laden</button>
+</div>
+
+<div class="bezel"><div class="panel mono glow" id="panel">
+  <iframe id="frame" title="Brillenansicht"></iframe>
+</div></div>
+
+<div class="facts" id="facts"></div>
+<p class="note" id="note"></p>
+<p class="note" id="fpsnote"></p>
+
+<div class="group">
+  <h2>Krone</h2>
+  <button data-a="prev">↺ drehen</button>
+  <button data-a="next">↻ drehen</button>
+  <button data-a="confirm">● klicken</button>
+  <button data-a="back">◀ zurück</button>
+</div>
+
+<div class="group">
+  <h2>Kopf</h2>
+  <button data-a="approve">nicken = ja</button>
+  <button data-a="reject">schütteln = nein</button>
+</div>
+
+<div class="legend">
+  <span>Tastatur: <kbd>↑</kbd><kbd>↓</kbd> drehen</span>
+  <span><kbd>Enter</kbd> klicken</span>
+  <span><kbd>Esc</kbd> zurück</span>
+  <span><kbd>j</kbd> nicken</span>
+  <span><kbd>n</kbd> schütteln</span>
+  <span>Mausrad über dem Panel dreht die Krone</span>
+</div>
+
+<script src="/sim/sim.js"></script>

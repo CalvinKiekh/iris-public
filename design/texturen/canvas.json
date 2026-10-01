@@ -1,0 +1,16 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 440, "h": 956, "title": "1 · Marmor" },
+    { "file": "Topografie.dc.html", "x": 500,  "y": 0, "w": 440, "h": 956, "title": "2 · Topografie" },
+    { "file": "Tinte.dc.html",      "x": 1000, "y": 0, "w": 440, "h": 956, "title": "3 · Tinte" },
+    { "file": "Duenen.dc.html",     "x": 1500, "y": 0, "w": 440, "h": 956, "title": "4 · Dünen" },
+    { "file": "Geflecht.dc.html",   "x": 2000, "y": 0, "w": 440, "h": 956, "title": "5 · Geflecht" },
+    { "file": "MacTinte.dc.html",   "x": 0,    "y": 1060, "w": 1440, "h": 900, "title": "3 · Tinte am Mac" },
+    { "file": "MacMarmor.dc.html",  "x": 1540, "y": 1060, "w": 1440, "h": 900, "title": "1 · Marmor am Mac" }
+  ],
+  "annotations": [
+    { "id": "waehlen", "x": 0, "y": -220, "w": 900,
+      "text": "Fünf Naturformen als Grund\n\n1 Marmor — Suminagashi, japanische Tuschemarmorierung. Parallele Linien, die nie parallel bleiben.\n2 Topografie — Höhenlinien einer Karte. Geschlossene Konturen, technisch und organisch zugleich.\n3 Tinte — Tinte in Wasser. Keine Linien, nur Dichte: Tiefe ohne ein einziges Motiv.\n4 Dünen — Rippelmarken, was Wind im Sand hinterlässt. Ruhig, gleichmäßig.\n5 Geflecht — Wurzeln unter dem Boden. Verzweigt statt konzentrisch, passt zum Strang.\n\nUnten zwei davon auf der großen Fläche — dort zeigt sich, ob eine Textur trägt oder zerfällt." }
+  ],
+  "launch": { "view": "canvas" }
+}

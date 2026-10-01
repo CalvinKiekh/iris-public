@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Beide werden beim Bauen aus apple.env gesetzt (mac/Makefile). -->
+    <key>CFBundleIdentifier</key>
+    <string>$(IRIS_BUNDLE).mac</string>
+    <key>IrisSchluesselbund</key>
+    <string>$(IRIS_BUNDLE)</string>
+    <key>CFBundleName</key>
+    <string>iris</string>
+    <key>CFBundleDisplayName</key>
+    <string>iris</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>IrisMac</string>
+    <key>CFBundleIconFile</key>
+    <string>iris</string>
+    <!-- Menu bar AND Dock: the menu bar item stays for the glance, but a
+         program with nothing to click is a program you cannot find - the
+         icon was pushed behind the notch and the app was gone. -->
+    <key>LSUIElement</key>
+    <false/>
+    <key>LSMinimumSystemVersion</key>
+    <string>15.0</string>
+    <!-- Die Bruecke spricht einfaches HTTP, unter der Tailscale-Adresse des
+         Rechners (100.x.y.z). Das Netz darunter ist verschluesselt. Eine
+         Ausnahme nur fuer diese Adresse laesst sich nicht eintragen - ATS
+         kennt Ausnahmen nur fuer Namen, nicht fuer IP-Adressen. Am Telefon
+         steht sie seit je (ios/project.yml); am Mac fehlte sie, und weil
+         localhost ohnehin durchgeht, fiel es erst auf, als der Pi als
+         zweiter Rechner dazukam. -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Zum Diktieren eines Auftrags. Das Mikrofon hört nur zu, solange es in der Eingabe leuchtet.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Damit ein gesprochener Auftrag als Text in der Eingabe landet.</string>
+</dict>
+</plist>

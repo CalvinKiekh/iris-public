@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Outfit:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap">
+  <style>
+    body{margin:0;background:#2e2a25;color:#f7f4ed;
+      font-family:"Outfit",-apple-system,system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;font-size:14px}
+    a{color:#d6b678} a:hover{color:#e8d3a4}
+    .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+    .lux{font-family:"Cormorant Garamond",Georgia,serif}
+    .gilt{position:relative}
+    .gilt::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+      background:linear-gradient(150deg,rgba(232,211,164,.5),rgba(232,211,164,.1) 40%,
+        transparent 74%);
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+    .panel{background:rgba(255,252,244,.045);border-radius:22px;
+      box-shadow:0 2px 6px rgba(0,0,0,.25),0 20px 44px -24px rgba(0,0,0,.5)}
+    .item{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:14px;
+      margin:0 9px}
+    .item.on{background:rgba(255,252,244,.07);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+    .sect{font-size:9.5px;letter-spacing:.24em;color:#a89f8f;padding:0 22px;margin:18px 0 8px}
+    @keyframes unfurl{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+    .unfurl{animation:unfurl .8s cubic-bezier(.2,.9,.22,1) backwards}
+    @keyframes bud{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.95;transform:scale(1.4)}}
+  </style>
+</helmet>
+
+<div style="width:1440px;height:900px;background:#2e2a25;position:relative;overflow:hidden;
+  display:flex;padding:16px;gap:16px;box-sizing:border-box">
+
+  <!-- Tinte in Wasser: keine Linien, nur Dichte. Das Rauschen wird zu
+       Wolken verzogen, so entsteht Tiefe ohne ein einziges Motiv. -->
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="none"
+    style="position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5">
+    <defs>
+      <filter id="ink" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011"
+          numOctaves="4" seed="7"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 .91  0 0 0 0 .83  0 0 0 0 .64
+          0 0 0 .42 -.06"/>
+      </filter>
+      <linearGradient id="ifade" x1="0" y1="0" x2=".7" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".25"/>
+        <stop offset=".5" stop-color="#fff" stop-opacity=".9"/>
+        <stop offset="1" stop-color="#fff" stop-opacity=".15"/></linearGradient>
+      <mask id="imask"><rect width="1440" height="900" fill="url(#ifade)"/></mask>
+    </defs>
+    <rect width="1440" height="900" filter="url(#ink)" mask="url(#imask)"/>
+  </svg>
+  <div style="position:absolute;top:-160px;right:-120px;width:600px;height:520px;
+    background:radial-gradient(closest-side,rgba(232,205,150,.1),transparent 70%);
+    filter:blur(70px);pointer-events:none"></div>
+  <div style="position:absolute;bottom:-180px;left:120px;width:560px;height:480px;
+    background:radial-gradient(closest-side,rgba(140,170,140,.07),transparent 70%);
+    filter:blur(80px);pointer-events:none"></div>
+
+  <!-- Sitzungen: der Ersatz für fünfzehn Terminalfenster -->
+  <div class="panel unfurl" style="width:256px;flex:none;display:flex;flex-direction:column;
+    overflow:hidden;position:relative;z-index:2">
+    <div style="padding:20px 22px 2px">
+      <div class="mono" style="font-size:9px;letter-spacing:.26em;color:#a89f8f">SITZUNGEN</div>
+    </div>
+    <div class="sect">LAUFEND</div>
+    <div class="item on">
+      <span style="width:7px;height:7px;border-radius:50%;background:#e8d3a4;flex:none;
+        box-shadow:0 0 9px rgba(232,211,164,.8);animation:bud 3s ease-in-out infinite"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:400;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;
+          white-space:nowrap">Dashboard bauen</div>
+        <div style="font-size:11px;color:#a89f8f">Freigabe offen</div></div>
+    </div>
+    <div class="item">
+      <span style="width:7px;height:7px;border-radius:50%;background:#a8bd93;flex:none"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:300;font-size:13.5px;color:#ddd6c8;overflow:hidden;
+          text-overflow:ellipsis;white-space:nowrap">Heizzonen prüfen</div>
+        <div style="font-size:11px;color:#a89f8f">hestia</div></div>
+    </div>
+    <div class="item">
+      <span style="width:7px;height:7px;border-radius:50%;background:#a8bd93;flex:none"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:300;font-size:13.5px;color:#ddd6c8">Bahnfilter</div>
+        <div style="font-size:11px;color:#a89f8f">ur-planer</div></div>
+    </div>
+    <div class="sect">PROJEKTE</div>
+    <div class="item"><div style="flex:1"><div style="font-weight:300;font-size:13.5px;
+      color:#ddd6c8">maro-clean</div></div>
+      <span class="mono" style="font-size:10.5px;color:#a89f8f">9</span></div>
+    <div class="item"><div style="flex:1"><div style="font-weight:300;font-size:13.5px;
+      color:#ddd6c8">hestia</div></div>
+      <span class="mono" style="font-size:10.5px;color:#a89f8f">14</span></div>
+    <div class="item"><div style="flex:1"><div style="font-weight:300;font-size:13.5px;
+      color:#ddd6c8">iris</div></div>
+      <span class="mono" style="font-size:10.5px;color:#a89f8f">21</span></div>
+  </div>
+
+  <!-- Verlauf -->
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;
+    position:relative;z-index:2">
+
+    <div class="unfurl" style="animation-delay:.05s;flex:none;padding:4px 6px">
+      <div class="mono" style="font-size:9px;letter-spacing:.26em;color:#a89f8f">SITZUNG</div>
+      <div class="lux" style="font-size:34px;font-weight:400;letter-spacing:-.01em;
+        line-height:1.1;margin-top:5px">Dashboard bauen</div>
+      <div style="display:flex;align-items:center;gap:20px;margin-top:14px">
+        <div class="mono" style="font-size:10.5px;color:#a89f8f">~/Documents/iris</div>
+        <div class="mono" style="font-size:10.5px;color:#a89f8f">main · mein-konto</div>
+      </div>
+    </div>
+
+    <div class="panel unfurl" style="animation-delay:.1s;flex:1;min-height:0;padding:24px 26px;
+      display:flex;flex-direction:column;justify-content:flex-end;gap:22px;overflow:hidden">
+
+      <div style="display:flex;gap:16px">
+        <span style="width:7px;height:7px;border-radius:50%;background:transparent;
+          border:1.5px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:8px"></span>
+        <div style="font-size:15px;line-height:1.65;font-weight:300;color:#ddd6c8;
+          max-width:70ch">Lauf die Tests, bevor wir weitermachen.</div>
+      </div>
+
+      <div style="display:flex;gap:16px">
+        <svg width="15" height="15" viewBox="0 0 24 24" style="flex:none;margin-top:4px">
+          <path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z"
+            fill="#e8d3a4" opacity=".92"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:15.5px;line-height:1.65;font-weight:300;max-width:70ch">Alle 59
+            Prüfungen grün.</div>
+          <div class="mono" style="font-size:10.5px;color:#a89f8f;margin-top:5px">make check
+            · 59 ok</div></div>
+      </div>
+
+      <div style="display:flex;gap:16px">
+        <span style="width:7px;height:7px;border-radius:50%;background:transparent;
+          border:1.5px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:8px"></span>
+        <div style="font-size:15px;line-height:1.65;font-weight:300;color:#ddd6c8;
+          max-width:70ch">Bau das Dashboard und zeig mir, was gerade läuft.</div>
+      </div>
+
+      <div style="display:flex;gap:16px">
+        <svg width="15" height="15" viewBox="0 0 24 24" style="flex:none;margin-top:4px">
+          <path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z"
+            fill="#e8d3a4" opacity=".92"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:15.5px;line-height:1.65;font-weight:300;max-width:70ch;
+            margin-bottom:14px">Die Registry steht. Für die Ansicht lege ich eine Datei an.</div>
+          <div class="gilt" style="border-radius:3px 22px 22px 20px;overflow:hidden;
+            background:linear-gradient(105deg,#332d26,#2a251f);max-width:78%;
+            box-shadow:0 2px 6px rgba(0,0,0,.28),0 16px 34px -18px rgba(0,0,0,.5)">
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 16px">
+              <span style="font-size:12.5px;font-weight:400">Edit</span>
+              <span class="mono" style="font-size:10.5px;color:#a89f8f;flex:1;min-width:0;
+                overflow:hidden;text-overflow:ellipsis">web/style.css</span>
+              <span class="mono" style="font-size:10.5px;color:#a8bd93">+18</span>
+              <span class="mono" style="font-size:10.5px;color:#c08d7e">−2</span></div>
+            <div class="mono" style="font-size:10.5px;line-height:1.75;background:#241f1b;
+              padding:8px 0;white-space:pre"><div style="display:flex;background:rgba(192,141,126,.12);box-shadow:inset 2px 0 0 #c08d7e"><span style="width:34px;text-align:right;padding-right:9px;color:rgba(192,141,126,.45)">143</span><span style="padding-left:10px;color:#dcb0a4">gap:.5rem;padding:.6rem}</span></div><div style="display:flex;background:rgba(168,189,147,.12);box-shadow:inset 2px 0 0 #a8bd93"><span style="width:34px;text-align:right;padding-right:9px;color:rgba(168,189,147,.45)">143</span><span style="padding-left:10px;color:#c3d5b3">gap:.75rem;padding:.75rem .9rem;</span></div><div style="display:flex;background:rgba(168,189,147,.12);box-shadow:inset 2px 0 0 #a8bd93"><span style="width:34px;text-align:right;padding-right:9px;color:rgba(168,189,147,.45)">144</span><span style="padding-left:10px;color:#c3d5b3">border-radius:22px;min-height:58px}</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px">
+        <span style="width:15px;flex:none"></span>
+        <div class="gilt" style="border-radius:4px 24px 24px 22px;padding:15px 18px;
+          max-width:440px;display:flex;align-items:center;gap:22px;
+          background:linear-gradient(155deg,rgba(232,211,164,.22),rgba(214,182,120,.09) 55%,
+            rgba(150,120,70,.05));
+          box-shadow:0 3px 9px rgba(0,0,0,.3),0 26px 56px -22px rgba(0,0,0,.55)">
+          <div style="flex:1;min-width:0">
+            <div class="mono" style="font-size:8.5px;letter-spacing:.26em;
+              color:#c3ae82">FREIGABE</div>
+            <div class="lux" style="font-size:21px;font-weight:400;margin-top:5px;
+              line-height:1.1">Datei anlegen</div>
+            <div class="mono" style="font-size:10px;color:#a89f8f;margin-top:4px;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">web/dashboard.js
+              · 84 Zeilen</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex:none">
+            <button class="gilt" style="padding:11px 22px;border-radius:999px;font-size:13px;
+              font-weight:400;background:rgba(232,211,164,.18);border:none;color:#fbf7ef;
+              font-family:inherit;letter-spacing:.02em">Erlauben</button>
+            <button style="padding:11px 16px;border-radius:999px;font-size:12.5px;
+              font-weight:300;background:transparent;border:none;color:#a89f8f;
+              font-family:inherit">Nein</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="unfurl" style="animation-delay:.15s;flex:none">
+      <div class="gilt" style="border-radius:999px;padding:8px 8px 8px 24px;display:flex;
+        align-items:center;gap:10px;background:rgba(255,252,244,.07)">
+        <span style="flex:1;color:#9a9184;font-size:14.5px;font-weight:300">Auftrag …</span>
+        <button style="padding:11px 26px;border-radius:999px;border:none;font-weight:400;
+          font-size:13.5px;color:#2a2119;font-family:inherit;letter-spacing:.02em;
+          background:linear-gradient(155deg,#f0dcae,#d6b678);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.5),
+            0 4px 12px -4px rgba(214,182,120,.5)">Senden</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Was das Terminal verschweigt -->
+  <div class="panel unfurl" style="animation-delay:.2s;width:288px;flex:none;padding:22px;
+    display:flex;flex-direction:column;gap:26px;overflow:hidden;position:relative;z-index:2">
+
+    <div>
+      <div class="mono" style="font-size:9px;letter-spacing:.26em;color:#a89f8f;
+        margin-bottom:12px">KONTEXT</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span class="lux" style="font-size:34px;font-weight:400">27</span>
+        <span style="font-size:13px;color:#a89f8f">%</span>
+        <span class="mono" style="font-size:10.5px;color:#a89f8f;margin-left:auto">54k
+          / 200k</span></div>
+      <!-- Dieselbe Strecke wie auf Handy, Uhr und Brille - aber nur hier,
+           nicht zusätzlich im Kopf. Zwei Anzeigen einer Zahl driften. -->
+      <svg width="100%" height="10" viewBox="0 0 240 10" preserveAspectRatio="none"
+        style="margin-top:10px">
+        <path id="dl" d="M2,6 C48,6 76,3 120,4 C164,5 196,3 238,4" fill="none"
+          stroke="#f7f4ed" stroke-opacity=".14" stroke-width="2" stroke-linecap="round"/>
+        <path d="M2,6 C48,6 76,3 120,4 C164,5 196,3 238,4" fill="none" stroke="#e8d3a4"
+          stroke-width="2.4" stroke-linecap="round" stroke-dasharray="64 400"/>
+        <circle r="2.6" fill="#fbf3e2">
+          <animateMotion dur="3.6s" repeatCount="indefinite" keyPoints="0;.27"
+            keyTimes="0;1" calcMode="linear"><mpath href="#dl"/></animateMotion>
+          <animate attributeName="opacity" values="0;1;1;0" dur="3.6s"
+            repeatCount="indefinite"/></circle>
+      </svg>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:7px;font-size:12px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="width:6px;height:6px;border-radius:2px;background:#d6b678"></span>
+          <span style="flex:1;color:#ddd6c8;font-weight:300">Systemvorgabe</span>
+          <span class="mono" style="color:#a89f8f;font-size:11px">6,4k</span></div>
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="width:6px;height:6px;border-radius:2px;
+            background:rgba(214,182,120,.5)"></span>
+          <span style="flex:1;color:#ddd6c8;font-weight:300">Werkzeuge</span>
+          <span class="mono" style="color:#a89f8f;font-size:11px">9,6k</span></div>
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="width:6px;height:6px;border-radius:2px;
+            background:rgba(168,189,147,.55)"></span>
+          <span style="flex:1;color:#ddd6c8;font-weight:300">Nachrichten</span>
+          <span class="mono" style="color:#a89f8f;font-size:11px">18,2k</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mono" style="font-size:9px;letter-spacing:.26em;color:#a89f8f;
+        margin-bottom:12px">GIT</div>
+      <div style="display:flex;flex-direction:column;gap:7px;font-size:12px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="mono" style="color:#a8bd93;width:11px;font-size:11px">M</span>
+          <span class="mono" style="color:#ddd6c8;flex:1;overflow:hidden;
+            text-overflow:ellipsis">web/style.css</span></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="mono" style="color:#a8bd93;width:11px;font-size:11px">M</span>
+          <span class="mono" style="color:#ddd6c8;flex:1;overflow:hidden;
+            text-overflow:ellipsis">web/app.js</span></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="mono" style="color:#a89f8f;width:11px;font-size:11px">?</span>
+          <span class="mono" style="color:#ddd6c8;flex:1;overflow:hidden;
+            text-overflow:ellipsis">web/dashboard.js</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mono" style="font-size:9px;letter-spacing:.26em;color:#a89f8f;
+        margin-bottom:12px">DIENSTE</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:12.5px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:7px;height:7px;border-radius:50%;background:#a8bd93;
+            box-shadow:0 0 8px rgba(168,189,147,.55)"></span>
+          <span style="flex:1;font-weight:300">bev-stitch</span>
+          <span class="mono" style="color:#a89f8f;font-size:11px">18s</span></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:7px;height:7px;border-radius:50%;background:#a8bd93;
+            box-shadow:0 0 8px rgba(168,189,147,.55)"></span>
+          <span style="flex:1;font-weight:300">hestia-api</span>
+          <span class="mono" style="color:#a89f8f;font-size:11px">22s</span></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:7px;height:7px;border-radius:50%;border:1.5px solid #c08d7e;
+            background:none;box-sizing:border-box"></span>
+          <span style="flex:1;font-weight:300;color:#a89f8f">nightly-backup</span>
+          <span class="mono" style="color:#c08d7e;font-size:11px">4 min</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

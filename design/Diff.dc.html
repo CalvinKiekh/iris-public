@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body{margin:0;background:#0b0e13;color:#e8edf5;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+    a{color:#5ac8fa} a:hover{color:#8ad9fc}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:13.2px;line-height:1.55}
+    .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5d6b7f}
+    .ln{display:flex;gap:0;white-space:pre}
+    .no{width:44px;flex:none;text-align:right;padding-right:12px;color:#3f4c5e;
+      user-select:none}
+    .tx{flex:1;padding-left:10px}
+  </style>
+</helmet>
+
+<!-- STUDIE, nicht mehr im Gebrauch. Erste Bausteine für die Darstellung
+     einer Änderung: Kopfzeile mit Bilanz, darunter die Zeilen, und die
+     zusammengeklappte Liste für mehrere Dateien. Die Kopfzeile hat es in
+     die fertigen Ansichten geschafft, das blaue Kleid nicht. -->
+
+<div style="padding:36px 40px;display:flex;flex-direction:column;gap:24px">
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div class="lbl">iris · Bausteine</div>
+    <div style="font-size:26px;font-weight:650;letter-spacing:-.01em">Was sich geändert hat</div>
+    <div style="font-size:14px;color:#93a1b5;max-width:54ch;line-height:1.5">
+      Der größte blinde Fleck des Terminals. Zeilennummern gedämpft, damit der
+      Blick auf dem Inhalt bleibt; Farbe nur am Rand, nie als Flächenfüllung.</div>
+  </div>
+
+  <!-- Kopf mit Bilanz -->
+  <div style="background:#151a22;border:1px solid #2a3442;border-radius:14px;overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;
+      border-bottom:1px solid #2a3442">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:550;font-size:17px">permissions.py</div>
+        <div style="font-size:13.6px;color:#93a1b5;margin-top:2px">bridge/ · v0 → jetzt</div>
+      </div>
+      <div style="display:flex;gap:10px;flex:none;font-size:13.6px;font-weight:600">
+        <span style="color:#4ade80">+14</span>
+        <span style="color:#f87171">−2</span>
+      </div>
+    </div>
+
+    <div class="mono" style="padding:12px 0">
+      <div class="ln"><span class="no">62</span><span class="tx" style="color:#93a1b5">    def start(self):</span></div>
+      <div class="ln"><span class="no">63</span><span class="tx" style="color:#93a1b5">        if os.path.exists(self.socket_path):</span></div>
+      <div class="ln" style="background:#2a1a1a;border-left:2px solid #f87171">
+        <span class="no" style="color:#8a5a5a">64</span><span class="tx" style="color:#fca5a5">            os.unlink(self.socket_path)</span></div>
+      <div class="ln" style="background:#14261a;border-left:2px solid #4ade80">
+        <span class="no" style="color:#4a7a5a">64</span><span class="tx" style="color:#a7f3c4">            probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)</span></div>
+      <div class="ln" style="background:#14261a;border-left:2px solid #4ade80">
+        <span class="no" style="color:#4a7a5a">65</span><span class="tx" style="color:#a7f3c4">            probe.settimeout(0.5)</span></div>
+      <div class="ln" style="background:#14261a;border-left:2px solid #4ade80">
+        <span class="no" style="color:#4a7a5a">66</span><span class="tx" style="color:#a7f3c4">            try:</span></div>
+      <div class="ln" style="background:#14261a;border-left:2px solid #4ade80">
+        <span class="no" style="color:#4a7a5a">67</span><span class="tx" style="color:#a7f3c4">                probe.connect(self.socket_path)</span></div>
+      <div class="ln" style="background:#14261a;border-left:2px solid #4ade80">
+        <span class="no" style="color:#4a7a5a">68</span><span class="tx" style="color:#a7f3c4">                raise RuntimeError("gehört einer laufenden Bridge")</span></div>
+      <div class="ln"><span class="no">69</span><span class="tx" style="color:#93a1b5">        self._srv = socket.socket(socket.AF_UNIX, ...)</span></div>
+      <div style="padding:6px 0 2px 44px;color:#3f4c5e;font-size:12px">⋯ 8 unveränderte Zeilen</div>
+    </div>
+  </div>
+
+  <!-- Zusammengeklappte Liste -->
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="lbl">In dieser Sitzung angefasst — aufklappbar</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:#151a22;
+        border:1px solid #2a3442;border-radius:14px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5d6b7f"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
+          <path d="M9 18l6-6-6-6"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:550;font-size:17px">session.py</div>
+          <div style="font-size:13.6px;color:#93a1b5;margin-top:2px">bridge/ · 3 Fassungen</div></div>
+        <div style="display:flex;gap:10px;flex:none;font-size:13.6px;font-weight:600">
+          <span style="color:#4ade80">+41</span><span style="color:#f87171">−7</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:#151a22;
+        border:1px solid #2a3442;border-radius:14px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5d6b7f"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
+          <path d="M9 18l6-6-6-6"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:550;font-size:17px">style.css</div>
+          <div style="font-size:13.6px;color:#93a1b5;margin-top:2px">web/ · 2 Fassungen</div></div>
+        <div style="display:flex;gap:10px;flex:none;font-size:13.6px;font-weight:600">
+          <span style="color:#4ade80">+18</span><span style="color:#5d6b7f">−0</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:#151a22;
+        border:1px solid #2a3442;border-radius:14px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5d6b7f"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
+          <path d="M9 18l6-6-6-6"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:550;font-size:17px">alte-notiz.md</div>
+          <div style="font-size:13.6px;color:#93a1b5;margin-top:2px">gelöscht</div></div>
+        <div style="display:flex;gap:10px;flex:none;font-size:13.6px;font-weight:600">
+          <span style="color:#f87171">−31</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

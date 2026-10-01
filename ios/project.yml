@@ -1,0 +1,162 @@
+# Erzeugt das Xcode-Projekt aus dieser Beschreibung: make ios-run
+#
+# Die .xcodeproj ist nur ein Nebenprodukt und steht nicht im Git: Xcode
+# schreibt sie bei jedem Klick um, diese Datei hier ist die Wahrheit.
+#
+# Team und Bundle-ID kommen aus ../apple.env (IRIS_TEAM, IRIS_BUNDLE), nicht
+# von hier: XcodeGen setzt ${...} aus der Umgebung ein, und die Skripte in
+# ios/ laden die Datei vorher. So steht keine persoenliche Apple-Identitaet
+# im Projekt, und wer iris uebernimmt, traegt seine an genau einer Stelle ein.
+
+name: Iris
+options:
+  bundleIdPrefix: ${IRIS_BUNDLE}
+  deploymentTarget:
+    iOS: "26.0"
+    watchOS: "26.0"
+  createIntermediateGroups: true
+  xcodeVersion: "26.4"
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    DEVELOPMENT_TEAM: ${IRIS_TEAM}
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.0.0"   # device.sh sets the real one, tools/version.sh
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+
+targets:
+  # Native SwiftUI, gestaltet nach dem iris-Designschema in design/: Farben,
+  # Schriften, Tinte, Korn und Messingkante kommen von dort, nicht aus einer
+  # anderen App. Tinte und Korn rechnet ios/tools/textures.py aus genau den
+  # SVG-Filtern des Entwurfs.
+  Iris:
+    type: application
+    platform: iOS
+    sources:
+      - path: Iris
+        excludes:
+          - "**/.DS_Store"
+          - "icon.svg"
+      # Shared with the Mac app: bridge, cards, models, outbox, theme.
+      - path: ../shared
+    # The watch app rides along inside the iPhone app.
+    dependencies:
+      - target: IrisWatch
+    # Push: sandbox for builds out of Xcode, production is set by the store.
+    # Time-sensitive lets an approval break through a focus mode - it holds
+    # up work on the Mac until someone answers.
+    entitlements:
+      path: Iris/Iris.entitlements
+      properties:
+        aps-environment: development
+        com.apple.developer.usernotifications.time-sensitive: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ${IRIS_BUNDLE}
+        INFOPLIST_FILE: Iris/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: Iris/Info.plist
+      properties:
+        CFBundleDisplayName: iris
+        # Beim Start die Grundfarbe - sonst blitzt vor dem ersten Bild
+        # Schwarz auf.
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIUserInterfaceStyle: Dark
+        # Wakes the app for a moment when a request was answered elsewhere,
+        # so its notification can be taken down. iOS allows no more than that
+        # in the background - push is what reaches you, not a running app.
+        UIBackgroundModes:
+          - remote-notification
+          # Keeps kept conversations current in the background (every 15
+          # minutes at the earliest - iOS decides when).
+          - fetch
+        # Unter welchem Namen die App ihre Token im Schluesselbund ablegt.
+        # Auf iOS und Mac derselbe, damit er sich nie mit der Bundle-ID
+        # der einzelnen App verschiebt (shared/Bridge.swift, Keychain).
+        IrisSchluesselbund: ${IRIS_BUNDLE}
+        BGTaskSchedulerPermittedIdentifiers:
+          - ${IRIS_BUNDLE}.refresh
+        # Die drei Schriften des Entwurfs.
+        UIAppFonts:
+          - CormorantGaramond-300.ttf
+          - CormorantGaramond-400.ttf
+          - CormorantGaramond-500.ttf
+          - Outfit-200.ttf
+          - Outfit-300.ttf
+          - Outfit-400.ttf
+          - Outfit-500.ttf
+          - JetBrainsMono-300.ttf
+          - JetBrainsMono-400.ttf
+        NSMicrophoneUsageDescription: >
+          Zum Diktieren eines Auftrags. Das Mikrofon hört nur zu, solange es
+          in der Eingabe leuchtet.
+        NSSpeechRecognitionUsageDescription: >
+          Damit ein gesprochener Auftrag als Text in der Eingabe landet.
+        # Die Brücke spricht einfaches HTTP, unter der Tailscale-Adresse des
+        # Macs (100.x.y.z). Das Netz darunter ist verschlüsselt. Eine Ausnahme
+        # nur für diese Adresse lässt sich nicht eintragen - ATS kennt
+        # Ausnahmen nur für Namen, nicht für IP-Adressen.
+        #
+        # Ausdrücklich ohne NSAllowsLocalNetworking: steht der daneben,
+        # ignoriert iOS NSAllowsArbitraryLoads - und er selbst erlaubt nur
+        # lokale Namen, keine Tailscale-Adresse. Im Simulator fällt das nicht
+        # auf, der spricht über 127.0.0.1.
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+
+  # Die Uhr: was läuft, was wartet, eine kurze Antwort. Sie erreicht die
+  # Brücken nicht selbst (kein Tailscale auf der Uhr) und fragt das iPhone
+  # über WatchConnectivity - shared/WatchLink.swift ist die gemeinsame Sprache.
+  IrisWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: IrisWatch
+      - path: ../shared/WatchLink.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ${IRIS_BUNDLE}.watchkitapp
+        INFOPLIST_FILE: IrisWatch/Info.plist
+        SKIP_INSTALL: YES
+    info:
+      path: IrisWatch/Info.plist
+      properties:
+        CFBundleDisplayName: iris
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: ${IRIS_BUNDLE}
+
+  # UI-Tests: bedienen die App im Simulator wie ein Mensch - tippen, Senden,
+  # Erlauben, eine Option - und prüfen an der Brücke, was ankam. Gestartet
+  # über ios/uitest.sh (make ios-test), gegen eine eigene Testbrücke.
+  IrisUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: IrisUITests
+    dependencies:
+      - target: Iris
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ${IRIS_BUNDLE}.uitests
+        TEST_TARGET_NAME: Iris
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.0"
+        SWIFT_STRICT_CONCURRENCY: minimal
+
+schemes:
+  Iris:
+    build:
+      targets:
+        Iris: all
+        IrisUITests: [test]
+    test:
+      targets: [IrisUITests]

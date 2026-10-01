@@ -1,0 +1,40 @@
+{
+  "profiles": [
+    {
+      "id": "io",
+      "label": "RayNeo iO",
+      "w": 640, "h": 480,
+      "tint": "#7dff9b",
+      "source": "geschätzt",
+      "note": "RayNeo nennt keine Pixelzahl. Bekannt: monochrom grün, 23,5° Sichtfeld, 1300 nits. Zahl korrigieren, sobald das SDK sie meldet.",
+      "input": ["crown-rotate", "crown-click", "crown-doubleclick", "head-nod", "head-shake", "voice"]
+    },
+    {
+      "id": "g2",
+      "label": "Even Realities G2",
+      "w": 576, "h": 288,
+      "tint": "#7dff9b",
+      "source": "Herstellerangabe",
+      "note": "576×288 je Linse, dual micro-LED, monochrom. Bedienung über den R1-Ring.",
+      "input": ["ring-scroll", "ring-click", "ring-back"]
+    },
+    {
+      "id": "narrow",
+      "label": "Schmales Band",
+      "w": 480, "h": 160,
+      "tint": "#7dff9b",
+      "source": "Härtefall",
+      "note": "Kein reales Gerät, sondern die ungünstigste Geometrie zum Gegenprüfen: ein Teleprompter-Streifen.",
+      "input": ["crown-rotate", "crown-click"]
+    }
+  ],
+  "apps": [
+    {
+      "id": "iris",
+      "label": "iris — Claude Code",
+      "url": "/glasses.html",
+      "needsToken": true,
+      "note": "Fernsteuerung für Claude-Code-Sitzungen."
+    }
+  ]
+}

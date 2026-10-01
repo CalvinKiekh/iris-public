@@ -1,0 +1,13 @@
+{
+  "name": "iris",
+  "short_name": "iris",
+  "description": "Fernsteuerung für Claude-Code-Sitzungen",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0e13",
+  "theme_color": "#0b0e13",
+  "icons": [
+    {"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}

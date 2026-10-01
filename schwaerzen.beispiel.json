@@ -1,0 +1,9 @@
+{
+  "_": "Kopieren nach schwaerzen.json (nicht im Git). Wird von tools/uebergabe.py gelesen.",
+  "ersetzen": {
+    "Mein Kind": "Lena",
+    "192.168.0.10": "192.168.0.x",
+    "mein-pi": "pi"
+  },
+  "melden": ["meinname", "meinefirma"]
+}

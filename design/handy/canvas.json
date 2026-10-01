@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 440, "h": 956,
+      "title": "Verlauf · iPhone 17 Pro Max" },
+    { "file": "Auswahl.dc.html", "x": 540, "y": 0, "w": 440, "h": 956,
+      "title": "Mehrfachauswahl" }
+  ],
+  "annotations": [
+    { "id": "was", "x": 0, "y": -230, "w": 980,
+      "text": "Zwei Arten von Frage\n\nLinks der Verlauf: was Claude gerade tut, steht da, ohne dass man tippt — Werkzeug, Ziel und Dauer je Zeile, dazu oben die Laufzeit und wie viele Befehle liefen. Was fehlschlägt, wird nie eingeklappt, und der Grund steht direkt darunter.\n\nRechts die zweite Art: nicht ja/nein, sondern mehrere Punkte zur Wahl. Die ganze Kachel schaltet, nicht ein Kästchen daneben. Am Mac liegen dieselben Kacheln zweispaltig.\n\nDer Modus ist oben rechts ein Griff, kein Menüpunkt — er entscheidet, was ohne Rückfrage passiert." }
+  ],
+  "launch": { "view": "canvas" }
+}

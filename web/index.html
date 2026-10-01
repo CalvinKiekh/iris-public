@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0e13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>iris</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/style.css">
+
+<header>
+  <button id="back" class="iconbtn hidden">‹</button>
+  <span id="dot" class="dot"></span>
+  <div class="title">
+    <div id="title">iris</div>
+    <div id="subtitle" class="sub"></div>
+  </div>
+  <span id="quota" class="sub"></span>
+  <button id="mode" class="iconbtn modechip hidden">Modus</button>
+  <button id="toglasses" class="iconbtn hidden" title="Brillenansicht">◉</button>
+  <button id="services" class="iconbtn" title="Dienste">◈</button>
+  <button id="stop" class="iconbtn">■</button>
+</header>
+
+<main>
+  <div id="s-projects"><div id="projects-list"></div></div>
+  <div id="s-sessions" class="hidden"><div id="sessions-list"></div></div>
+  <div id="s-chat" class="hidden"><div id="cards"></div></div>
+  <div id="s-services" class="hidden">
+    <div id="svc-summary" class="svc-summary"></div>
+    <div id="svc-list"></div>
+  </div>
+</main>
+
+<div id="shortcuts" class="shortcuts hidden"></div>
+
+<footer id="composer" class="hidden">
+  <button id="quick" class="mic" title="Standard-Abfragen">☰</button>
+  <textarea id="input" rows="1" placeholder="Auftrag …"></textarea>
+  <button id="mic" class="mic" title="Diktat">🎙</button>
+  <button id="send" class="send" title="Senden">↑</button>
+</footer>
+
+<script src="/wheel.js"></script>
+<script src="/app.js"></script>

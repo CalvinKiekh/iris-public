@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body{margin:0;background:#0b0e13;color:#e8edf5;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+    a{color:#5ac8fa} a:hover{color:#8ad9fc}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5d6b7f}
+  </style>
+</helmet>
+
+<!-- STUDIE, nicht mehr im Gebrauch. Versuch, jeden Zug des Gesprächs in
+     eine eigene Karte zu setzen. Verworfen: bei vier Karten übereinander
+     liest man Rahmen statt Text. In den fertigen Ansichten steht der Text
+     frei, und nur die Änderung und die Freigabe bekommen eine Fläche. -->
+
+<div style="padding:36px 40px;display:flex;flex-direction:column;gap:26px">
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div class="lbl">iris · Bausteine</div>
+    <div style="font-size:26px;font-weight:650;letter-spacing:-.01em">Karten</div>
+    <div style="font-size:14px;color:#93a1b5;max-width:52ch;line-height:1.5">
+      Der Verlauf besteht aus genau diesen Sorten. Jede hat eine Aufgabe,
+      keine zwei sehen ähnlich aus.</div>
+  </div>
+
+  <!-- Eigene Eingabe -->
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="lbl">Eigene Eingabe — eingerückt, damit die Seite eine Sprechrichtung hat</div>
+    <div style="background:#17293d;border:1px solid #2b4059;border-radius:14px;
+      padding:14px 16px;margin-left:32px">
+      <div style="font-size:17px;line-height:1.5">Schreib die Datei bericht.md mit einer kurzen Notiz.</div>
+    </div>
+  </div>
+
+  <!-- Antwort -->
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="lbl">Antwort — der einzige Ort mit ruhigem Fließtext</div>
+    <div style="background:#1c2330;border:1px solid #2f3d52;border-radius:14px;padding:14px 16px">
+      <div style="font-size:17px;line-height:1.5">Die Datei ist angelegt. Sie enthält eine
+        Zeile mit dem heutigen Datum — mehr war nicht verlangt.</div>
+    </div>
+  </div>
+
+  <!-- Werkzeugaufruf -->
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="lbl">Werkzeugaufruf — Name in Bezugsfarbe, Argument einzeilig</div>
+    <div style="background:#151a22;border:1px solid #2a3442;border-radius:14px;padding:13px 16px">
+      <div style="font-size:17px;font-weight:600;color:#5ac8fa">Write</div>
+      <div class="mono" style="font-size:13.9px;color:#93a1b5;margin-top:4px">Documents/iris/bericht.md</div>
+    </div>
+  </div>
+
+  <!-- Ergebnis -->
+  <div style="display:flex;gap:12px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+      <div class="lbl">Ergebnis</div>
+      <div style="background:#151a22;border:1px solid #2a3442;border-radius:14px;padding:13px 16px">
+        <div class="mono" style="font-size:13.9px;color:#93a1b5;line-height:1.45">File created successfully at bericht.md</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+      <div class="lbl">Ergebnis, fehlgeschlagen</div>
+      <div style="background:#151a22;border:1px solid #5b2b2b;border-radius:14px;padding:13px 16px">
+        <div class="mono" style="font-size:13.9px;color:#fca5a5;line-height:1.45">ENOENT: no such file or directory</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bestätigung -->
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="lbl">Bestätigung — die einzige Karte, die unterbricht</div>
+    <div style="background:#2a2413;border:2px solid #fbbf24;border-radius:14px;padding:14px 16px;
+      display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#5d6b7f">Bestätigung nötig</div>
+        <div style="font-size:18px;font-weight:700;color:#fbbf24;margin-top:5px">Bash</div>
+        <div class="mono" style="font-size:14.5px;color:#e8edf5;margin-top:7px;line-height:1.45">rm -rf build/ &amp;&amp; make release</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button style="flex:1;padding:15px;border-radius:12px;font-size:17px;font-weight:650;
+          background:#1c2330;border:1px solid #2a3442;color:#e8edf5;font-family:inherit">Ablehnen</button>
+        <button style="flex:1;padding:15px;border-radius:12px;font-size:17px;font-weight:650;
+          background:#4ade80;border:none;color:#06240f;font-family:inherit">Erlauben</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beantwortet -->
+  <div style="display:flex;gap:12px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+      <div class="lbl">Danach — verblasst, Urteil bleibt lesbar</div>
+      <div style="background:#151a22;border:1px solid #2a3442;border-radius:14px;padding:13px 16px;opacity:.55">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#5d6b7f">Bestätigung nötig</div>
+        <div style="font-size:17px;font-weight:700;color:#fbbf24;margin-top:4px">Bash</div>
+        <div style="font-size:13.6px;font-weight:600;color:#4ade80;margin-top:6px">erlaubt</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+      <div class="lbl">Abschluss — kein Betrag, nur Dauer</div>
+      <div style="padding:13px 16px;text-align:center">
+        <div style="font-size:13.9px;color:#93a1b5">fertig · 6s</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

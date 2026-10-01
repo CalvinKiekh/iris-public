@@ -1,0 +1,9 @@
+{
+  "arbeitszeit": {
+    "tage": ["Mo", "Di", "Mi", "Do", "Fr"],
+    "von": "07:00",
+    "bis": "16:00",
+    "zeitzone": "Europe/Berlin"
+  },
+  "abo_schwelle": 0.85
+}

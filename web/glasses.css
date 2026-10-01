@@ -1,0 +1,67 @@
+/* Glasses view: 576x288, monochrome, one card at a time.
+ *
+ * Constraints that drive every choice here, taken from the Even Realities G2
+ * (dual micro-LED, 576x288 per lens) and expected to hold for the RayNeo IO:
+ *   - No colour. Meaning must survive as shape, border and inversion.
+ *   - No grey either: these panels are effectively 1-bit, so a dimmed
+ *     element would simply vanish. Everything is full-on or absent.
+ *   - Roughly 44 characters by 8 lines. Anything longer must paginate,
+ *     never scroll continuously - there is no scrollbar to judge position by.
+ *   - Driven by a ring or wheel: one axis, plus confirm and back.
+ */
+:root{
+  --gw:576px; --gh:288px;
+  --fg:#fff; --bg:#000;
+  --line:22px;              /* line height */
+  --fs:19px;                /* font size: ~44 chars across 576px */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);height:100%}
+body{
+  width:var(--gw); height:var(--gh); overflow:hidden;
+  color:var(--fg); background:var(--bg);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  font-size:var(--fs); line-height:var(--line);
+  display:flex; flex-direction:column;
+  -webkit-font-smoothing:none; font-smooth:never;   /* crisp on 1-bit panels */
+}
+
+/* status: exactly one line, never wraps */
+.bar{
+  display:flex; gap:10px; align-items:baseline;
+  height:var(--line); flex:none;
+  border-bottom:2px solid var(--fg);
+  padding:0 4px 2px; font-size:15px; line-height:1;
+  overflow:hidden; white-space:nowrap;
+}
+.bar .who{flex:1; overflow:hidden; text-overflow:ellipsis}
+.bar .pos{flex:none; opacity:1}
+.bar .busy::after{content:"·"; animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* the single visible card */
+.stage{flex:1; padding:6px 4px; overflow:hidden; position:relative}
+.k{font-size:14px; line-height:1; letter-spacing:.1em; margin-bottom:4px}
+.body{white-space:pre-wrap; overflow-wrap:anywhere}
+.mono{font-size:17px}
+
+/* Inversion is the only "highlight" a 1-bit panel has. */
+.inv{background:var(--fg); color:var(--bg); padding:0 4px}
+
+/* confirmation: unmissable, and it owns the whole screen */
+.ask{border:3px solid var(--fg); height:100%; padding:4px 6px;
+  display:flex; flex-direction:column}
+.ask .what{flex:1; overflow:hidden}
+.opts{display:flex; gap:8px; flex:none; margin-top:4px}
+.opt{flex:1; text-align:center; border:2px solid var(--fg); padding:2px 0}
+.opt.sel{background:var(--fg); color:var(--bg)}
+
+/* list screens: pick a project, a prompt, a mode */
+.list{height:100%; overflow:hidden}
+.item{height:var(--line); overflow:hidden; white-space:nowrap;
+  text-overflow:ellipsis; padding:0 4px}
+.item.sel{background:var(--fg); color:var(--bg)}
+
+.hint{position:absolute; right:4px; bottom:2px; font-size:14px;
+  line-height:1; border:1px solid var(--fg); padding:1px 4px}
+.empty{display:grid; place-items:center; height:100%; text-align:center}

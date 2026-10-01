@@ -1,0 +1,35 @@
+# iris auf dem HAOS-Pi - ein eigener Stack, neben hestia und mushroomos,
+# aber in nichts mit ihnen verbunden: eigener Ordner, eigenes Arbeits-
+# verzeichnis, eigener Container.
+#
+# Kein Tailscale-Sidecar, anders als bei hestia. Der Pi haengt schon im
+# Tailnet, und die Bruecke bindet direkt an seine Tailnet-Adresse: damit
+# ist sie von dort erreichbar und sonst nirgends - nicht im WLAN, nicht im
+# LAN. Ein Sidecar haette nur einen zweiten Geraetenamen gebracht und dafuer
+# einen Auth-Key verlangt, den jemand erzeugen und erneuern muss.
+services:
+  bridge:
+    build: .
+    image: iris-bridge:local
+    container_name: iris-bridge
+    # Das Netz des Pi, aber gebunden wird nur an die Tailnet-Adresse (siehe
+    # command). host statt Portfreigabe, weil eine Freigabe auf allen
+    # Schnittstellen lauschen wuerde - genau das soll sie nicht.
+    network_mode: host
+    command: ["python3", "-m", "bridge", "--host", "${IRIS_PI_TAILNET_IP:?Tailnet-Adresse des Pi fehlt}", "--port", "8780"]
+    user: "1001:1001"
+    environment:
+      # Ohne Anmeldung startet keine Sitzung. Der Token kommt aus
+      # `claude setup-token` und steht in der .env daneben - nie im Bild.
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:?Token fehlt - siehe pi/README.md}
+      # Mehr braucht es nicht: die Bruecke leitet ihren Konfigurationspfad
+      # aus ~ ab, und Python liest ~ aus HOME. Damit liegen Token, Sitzungen
+      # und Verlauf alle unter /arbeit und ueberleben jeden Neubau.
+      HOME: /arbeit
+    volumes:
+      # Der Code der Bruecke, beim Ausrollen hineingelegt.
+      - ./code:/opt/iris:ro
+      # Alles, was bleiben soll: Sitzungen, Verlauf, Token, Arbeitsordner.
+      - ./arbeit:/arbeit
+    working_dir: /opt/iris
+    restart: unless-stopped

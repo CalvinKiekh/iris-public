@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Outfit:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap">
+  <style>
+    /* Apple Watch Ultra, 49 mm: 410 × 502. Schwarz statt Dämmerung, weil
+       OLED-Pixel, die nichts zeigen, keine Batterie kosten. Haltung und
+       Marken kommen von den großen Geräten mit. */
+    body{margin:0;background:#141210;color:#f7f4ed;
+      font-family:"Outfit",-apple-system,system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased}
+    a{color:#e8d3a4} a:hover{color:#f0e2bf}
+    .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+    .lux{font-family:"Cormorant Garamond",Georgia,serif}
+    @keyframes bud{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.35)}}
+    /* Der Daumen der Krone wandert, damit erkennbar ist, wofür sie gut ist */
+    @keyframes ride{0%,100%{transform:translateY(0)}50%{transform:translateY(74px)}}
+    /* Der Claude-Stern steht für Claude, der offene Ring für dich. Dieselbe
+       Unterscheidung wie auf allen vier Geräten - wer sie einmal gelernt
+       hat, muss sie nirgends neu lernen. */
+    .star{flex:none;margin-top:3px}
+  </style>
+</helmet>
+
+<!-- 410 × 502 (Ultra 2, bestätigt). Die Ecken sind stark gerundet - das
+     Gehäuse schneidet dort ab, also darf dort kein Inhalt liegen. -->
+<div style="width:410px;height:502px;background:#000;position:relative;overflow:hidden;
+  border-radius:74px;display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px rgba(232,211,164,.12),0 18px 44px -18px rgba(0,0,0,.9)">
+
+  <!-- Kopf: eine Zeile. Mehr ist am Handgelenk verschwendet. -->
+  <div style="flex:none;padding:34px 30px 8px;display:flex;align-items:center;gap:9px">
+    <span style="font-size:12.5px;color:#a89f8f;flex:1;min-width:0;overflow:hidden;
+      text-overflow:ellipsis;white-space:nowrap">Dashboard bauen</span>
+    <!-- Der Kontext als Strecke, auf 40 px eingedampft: ganz = das Fenster,
+         hell = belegt. Kein Puls, der wäre am Handgelenk nur Unruhe. -->
+    <svg width="40" height="8" viewBox="0 0 40 8" style="flex:none">
+      <line x1="1.5" y1="4" x2="38.5" y2="4" stroke="#f7f4ed" stroke-opacity=".2"
+        stroke-width="2" stroke-linecap="round"/>
+      <line x1="1.5" y1="4" x2="11.5" y2="4" stroke="#e8d3a4" stroke-width="2.4"
+        stroke-linecap="round"/></svg>
+    <span class="mono" style="font-size:10px;color:#a89f8f;flex:none">27%</span>
+  </div>
+
+  <!-- Der Verlauf. Die Krone scrollt hier durch - deshalb fadet er oben aus. -->
+  <div style="flex:1;min-height:0;padding:0 28px 0 26px;display:flex;flex-direction:column;
+    justify-content:flex-end;gap:15px;overflow:hidden;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22px);
+    mask-image:linear-gradient(180deg,transparent 0,#000 22px)">
+
+    <div style="display:flex;gap:11px">
+      <span style="width:6px;height:6px;border-radius:50%;background:transparent;
+        border:1.4px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:7px"></span>
+      <div style="font-size:14.5px;line-height:1.5;font-weight:300;color:#ddd6c8">Lauf die
+        Tests, bevor wir weitermachen.</div>
+    </div>
+
+    <div style="display:flex;gap:11px">
+      <svg width="13" height="13" viewBox="0 0 24 24" class="star">
+        <path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z"
+          fill="#e8d3a4" opacity=".92"/></svg>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14.5px;line-height:1.5;font-weight:300">Alle 59 Prüfungen grün.</div>
+        <div class="mono" style="font-size:10px;color:#a89f8f;margin-top:3px">make check
+          · 59 ok</div></div>
+    </div>
+
+    <div style="display:flex;gap:11px">
+      <span style="width:6px;height:6px;border-radius:50%;background:transparent;
+        border:1.4px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:7px"></span>
+      <div style="font-size:14.5px;line-height:1.5;font-weight:300;color:#ddd6c8">Bau das
+        Dashboard und zeig mir, was läuft.</div>
+    </div>
+
+    <div style="display:flex;gap:11px">
+      <svg width="13" height="13" viewBox="0 0 24 24" class="star">
+        <path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z"
+          fill="#e8d3a4" opacity=".92"/></svg>
+      <div style="font-size:14.5px;line-height:1.5;font-weight:300;flex:1;min-width:0">Die
+        Registry steht. Für die Ansicht lege ich eine Datei an.</div>
+    </div>
+  </div>
+
+  <!-- Die Freigabe bleibt greifbar, während oben gescrollt wird -->
+  <div style="flex:none;padding:10px 20px 30px">
+    <div style="border-radius:6px 24px 40px 40px;padding:12px 15px 14px;
+      background:linear-gradient(155deg,rgba(232,211,164,.22),rgba(214,182,120,.08) 60%,
+        rgba(150,120,70,.04));
+      box-shadow:inset 0 1px 0 rgba(232,211,164,.35),0 2px 8px rgba(0,0,0,.6)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="position:relative;width:6px;height:6px;flex:none">
+          <span style="position:absolute;inset:0;border-radius:50%;background:#e8d3a4"></span>
+          <span style="position:absolute;inset:-4px;border-radius:50%;
+            background:rgba(232,211,164,.3);animation:bud 2.6s ease-in-out infinite"></span></span>
+        <span class="mono" style="font-size:8.5px;letter-spacing:.24em;
+          color:#c3ae82">FREIGABE</span>
+      </div>
+      <div class="lux" style="font-size:22px;line-height:1.05;margin-top:5px">Datei anlegen</div>
+      <div class="mono" style="font-size:9.5px;color:#a89f8f;margin-top:4px;
+        overflow:hidden;text-overflow:ellipsis;white-space:nowrap">dashboard.js · 84 Zeilen</div>
+      <!-- Erlauben ist breiter als Nein: die häufigere Antwort bekommt die
+           größere Fläche. Beide über 44 pt hoch, sonst trifft man sie im
+           Gehen nicht. -->
+      <div style="display:flex;gap:7px;margin-top:10px">
+        <button style="flex:1.5;padding:11px;border-radius:999px;border:none;font-size:14.5px;
+          font-weight:500;font-family:inherit;color:#2a2119;
+          background:linear-gradient(155deg,#f0dcae,#d6b678);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.5)">Erlauben</button>
+        <button style="flex:1;padding:11px;border-radius:999px;border:none;font-size:13.5px;
+          font-weight:300;font-family:inherit;color:#ddd6c8;
+          background:rgba(247,244,237,.1)">Nein</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Die Krone: ihr Daumen zeigt, wo im Verlauf man steht. Er sitzt rechts,
+       dort wo die Krone sitzt, und endet über der Freigabe - gescrollt wird
+       der Verlauf, nicht die Entscheidung. -->
+  <div style="position:absolute;right:9px;top:74px;bottom:168px;width:3px;
+    border-radius:2px;background:rgba(247,244,237,.1);pointer-events:none">
+    <div style="width:3px;height:56px;border-radius:2px;background:#e8d3a4;opacity:.55;
+      animation:ride 6s ease-in-out infinite"></div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

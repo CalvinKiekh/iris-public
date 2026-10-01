@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Outfit:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap">
+  <style>
+    /* Dieselben drei Schriften wie am Mac: Cormorant für Titel und Zahlen,
+       Outfit für alles Bedienbare, JetBrains Mono für alles, was wörtlich
+       stimmen muss. Der Rahmen selbst ist Dämmerung (#2e2a25); der Grund
+       dahinter ist dunkler, damit das Gerät als Gerät zu sehen ist. */
+    body{margin:0;background:#100e0c;color:#f7f4ed;
+      font-family:"Outfit",-apple-system,system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased}
+    a{color:#c8ad74} a:hover{color:#e0c894}
+    .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+    .lux{font-family:"Cormorant Garamond",Georgia,serif}
+    /* Tinte: eine weit auseinandergezogene Turbulenz, weich eingeblendet.
+       Am Handy trägt sie, weil die Flächen klein sind - am Mac wurde
+       daraus über 1440 px ein Fleck, dort steht deshalb Licht statt Tinte. */
+    /* Die Tinte liegt in den Flächen, nicht im Grund - so heben sie sich ab. */
+    .inked{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.004 0.009' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 .95  0 0 0 0 .88  0 0 0 0 .71  0 0 0 1.5 -.42'/></filter><rect width='600' height='400' filter='url(%23n)'/></svg>");background-size:cover;
+      background-blend-mode:soft-light}
+
+    /* Luxus ist eine Kante, keine Fläche: ein Haarstrich Messing dort, wo
+       das Licht eine echte Kante träfe. */
+    .gilt{position:relative}
+    .gilt::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+      background:linear-gradient(150deg,rgba(214,182,120,.65),rgba(214,182,120,.12) 38%,
+        transparent 72%);
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+
+    /* Der Grund ist ein beleuchteter Raum, keine Farbe: Licht von oben
+       links, ein zweiter warmer Herd rechts, ein kühler unten, und zu den
+       Rändern hin fällt alles ab. Ohne das liest sich die Fläche eintönig,
+       egal wie schön die Karten darauf sind. */
+    .raum{background-color:#2e2a25;
+      background-image:
+        radial-gradient(78% 34% at 22% -4%,rgba(255,244,222,.10),transparent 66%),
+        radial-gradient(62% 26% at 96% 22%,rgba(232,205,150,.07),transparent 72%),
+        radial-gradient(70% 30% at 4% 84%,rgba(140,170,140,.06),transparent 74%),
+        linear-gradient(180deg,rgba(255,250,238,.03),transparent 26%,
+          rgba(0,0,0,.22) 100%),
+        radial-gradient(118% 76% at 50% 44%,transparent 42%,rgba(0,0,0,.42) 100%)}
+    /* Ein Korn über allem - es liegt auf Karten und Grund gleichzeitig und
+       bindet beide zu einer Aufnahme zusammen. */
+    .korn{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.6;
+      mix-blend-mode:overlay;border-radius:56px;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='k' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' seed='5'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .98  0 0 0 0 .93  0 0 0 .06 0'/></filter><rect width='160' height='160' filter='url(%23k)'/></svg>");
+      background-size:160px 160px}
+
+    /* Wachstum: der Strang zeichnet sich, die Knoten schwellen an */
+    @keyframes vine{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+    @keyframes swell{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+    @keyframes unfurl{from{opacity:0;transform:translateY(14px) scaleY(.94);
+      transform-origin:left top}to{opacity:1;transform:none}}
+    .unfurl{animation:unfurl .85s cubic-bezier(.2,.9,.22,1) backwards}
+    .node{animation:swell .7s cubic-bezier(.3,1.3,.5,1) backwards}
+    @keyframes bud{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.5);opacity:.95}}
+    /* Der Trieb wächst aus dem Knoten zum Inhalt - als Teil des Knotens,
+       nicht als geratene Linie darüber. */
+    .node{position:relative}
+    .node::after{content:"";position:absolute;left:100%;top:50%;width:16px;height:1px;
+      background:linear-gradient(90deg,currentColor,transparent);opacity:.5}
+    /* Werkzeugzeilen. Der Terminal zeigt jede Zeile mit; hier stehen
+       Werkzeug, Ziel und Dauer - genug, um ohne Tippen zu wissen, was
+       läuft. "Ein Werkzeug verwendet" ist keine Auskunft. */
+    .werke{margin-top:11px;padding-left:13px;
+      border-left:1px solid rgba(247,244,237,.1)}
+    .werk{display:flex;align-items:center;gap:9px;padding:4.5px 0;
+      font-size:12.5px;font-weight:300}
+    .marke{width:5px;height:5px;border-radius:50%;flex:none;background:#a8bd93;
+      opacity:.85}
+    .marke.fehl{background:#c08d7e;opacity:1;box-shadow:0 0 7px rgba(192,141,126,.7)}
+    .marke.laeuft{background:#e8d3a4;animation:bud 1.5s ease-in-out infinite}
+    .wkz{flex:none;color:#f7f4ed}
+    .werk.fehl .wkz{color:#e0a99b}
+    .ziel{font-size:10.5px;color:#a89f8f;flex:1;min-width:0;overflow:hidden;
+      text-overflow:ellipsis;white-space:nowrap}
+    .dauer{font-size:10px;color:#8d8578;flex:none}
+    /* Der Grund steht direkt unter dem Fehlschlag. Wer ihn erst aufklappen
+       muss, weiß nicht, ob er wichtig war. */
+    .grund{font-size:10.5px;color:#c08d7e;line-height:1.45;
+      padding:1px 0 6px 14px}
+    /* Der Modus ist am Handy ein Griff, kein Menüpunkt: er ändert, was ohne
+       Rückfrage passiert, also gehört er dorthin, wo man hinsieht. */
+    .modus{display:flex;align-items:center;gap:7px;flex:none;
+      padding:10px 14px;border-radius:999px;background:rgba(232,211,164,.1);
+      box-shadow:inset 0 1px 0 rgba(232,211,164,.22)}
+
+    /* ---- Mehrfachauswahl ---------------------------------------------
+       Claude fragt nicht nur ja/nein: manchmal stehen mehrere Punkte zur
+       Wahl. Das ist eine Liste zum Abhaken, keine Sammlung von Objekten -
+       jede Zeile eine eigene Fläche zu geben macht aus vier Punkten vier
+       Kästen, die man einzeln lesen muss. Eine Haarlinie trennt, sonst
+       nichts. Getroffen wird die ganze Zeile, nicht das Kästchen. */
+    .wahl{display:flex;align-items:center;gap:12px;padding:9px 2px;
+      border-bottom:1px solid rgba(247,244,237,.055)}
+    .wahl:last-child{border-bottom:none}
+    .tick{width:17px;height:17px;border-radius:5px;flex:none;
+      border:1.5px solid rgba(247,244,237,.2);box-sizing:border-box;
+      display:grid;place-items:center}
+    /* Angehakt ist die einzige Stelle mit Messing. Mehr braucht es nicht,
+       damit man auf einen Blick sieht, was drankommt. */
+    .wahl.an .tick{border-color:transparent;
+      background:linear-gradient(155deg,#f0dcae,#d6b678);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
+    .wahl .titel{font-size:14.5px;font-weight:300;color:#8f887c;line-height:1.3}
+    .wahl.an .titel{color:#f7f4ed;font-weight:400}
+    @keyframes breeze{0%,100%{transform:translateX(0)}50%{transform:translateX(9px)}}
+  </style>
+</helmet>
+
+<!-- iPhone 17 Pro Max, 440 × 956. Dasselbe Brett wie der Verlauf, nur mit
+     der zweiten Art von Frage: nicht ja/nein, sondern mehrere Punkte zur
+     Wahl. Am Mac liegen dieselben Kacheln zweispaltig - die Regel ist:
+     nebeneinander, sobald eine Kachel über 300 px breit würde. -->
+<div class="raum" style="width:440px;height:956px;position:relative;overflow:hidden;
+  border-radius:56px;display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px rgba(232,211,164,.1),0 20px 50px -20px rgba(0,0,0,.9)">
+
+  <div class="korn"></div>
+
+  <!-- Kopf: gleicher Aufbau wie im Verlauf, damit nichts umgelernt wird -->
+  <div style="flex:none;padding:58px 22px 0 22px;position:relative;z-index:3">
+    <div class="unfurl" style="display:flex;align-items:flex-start;gap:16px">
+      <div style="flex:1;min-width:0">
+        <div class="mono" style="font-size:9.5px;letter-spacing:.28em;color:#a89f8f">
+          SITZUNG</div>
+        <div class="lux" style="font-size:33px;font-weight:400;letter-spacing:-.01em;
+          line-height:1.06;margin-top:6px">Dashboard bauen</div>
+        <div class="mono" style="font-size:10.5px;color:#a89f8f;margin-top:8px">
+          ~/Documents/iris</div>
+      </div>
+      <div class="modus">
+        <span style="width:5px;height:5px;border-radius:50%;background:#a8bd93;
+          flex:none"></span>
+        <span style="font-size:12.5px;font-weight:300">plan</span>
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#a89f8f"
+          stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+
+    <div class="unfurl mono" style="animation-delay:.22s;margin-top:16px;
+      font-size:10.5px;color:#a89f8f;display:flex;align-items:center;gap:9px">
+      <span style="width:5px;height:5px;border-radius:50%;background:#e8d3a4;
+        flex:none;animation:bud 2.4s ease-in-out infinite"></span>
+      <span>läuft seit 12:40</span>
+      <span style="opacity:.45">·</span>
+      <span>31 Befehle</span>
+      <span style="opacity:.45">·</span>
+      <span>alle grün</span>
+    </div>
+  </div>
+
+  <!-- Der Verlauf endet an der Frage: sie ist das Letzte, was passiert ist,
+       also steht sie unten - dort, wo auch die Antwort hingehört. -->
+  <div style="flex:1;min-height:0;overflow:hidden;padding:20px 20px 0 0;z-index:3;
+    display:flex;flex-direction:column;justify-content:flex-end;gap:22px;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 26px);
+    mask-image:linear-gradient(180deg,transparent 0,#000 26px)">
+
+    <div class="unfurl" style="animation-delay:.12s;display:flex;gap:14px;padding-left:22px">
+      <span style="width:7px;height:7px;border-radius:50%;background:transparent;
+        border:1.5px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:9px"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;line-height:1.6;font-weight:300;color:#ddd6c8">Lass die
+          Heizzonen erstmal liegen, wir bleiben bei iris.</div></div>
+    </div>
+
+    <div class="unfurl" style="animation-delay:.16s;display:flex;gap:14px;padding-left:22px">
+      <svg width="15" height="15" viewBox="0 0 24 24" class="node" style="animation-delay:.42s;flex:none;margin-top:5px"><path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z" fill="#e8d3a4" opacity=".92"/></svg>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16.5px;line-height:1.65;font-weight:300;color:#f7f4ed">Gut.
+          Dann bleibe ich hier.</div>
+      </div>
+    </div>
+
+    <div class="unfurl" style="animation-delay:.18s;display:flex;gap:14px;padding-left:22px">
+      <span style="width:7px;height:7px;border-radius:50%;background:transparent;
+        border:1.5px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:9px"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;line-height:1.6;font-weight:300;color:#ddd6c8">Zeig mir
+          kurz den Stand.</div></div>
+    </div>
+
+    <div class="unfurl" style="animation-delay:.24s;display:flex;gap:14px;padding-left:22px">
+      <svg width="15" height="15" viewBox="0 0 24 24" class="node" style="animation-delay:.5s;flex:none;margin-top:5px"><path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z" fill="#e8d3a4" opacity=".92"/></svg>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16.5px;line-height:1.65;font-weight:300;color:#f7f4ed">Brücke
+          läuft, alle Prüfungen grün, sieben Dienste haben sich gemeldet.</div>
+        <div class="mono" style="font-size:10.5px;color:#a89f8f;margin-top:5px">make check
+          · 59 ok · 7/7</div>
+      </div>
+    </div>
+
+    <div class="unfurl" style="animation-delay:.3s;display:flex;gap:14px;padding-left:22px">
+      <span style="width:7px;height:7px;border-radius:50%;background:transparent;
+        border:1.5px solid #a89f8f;box-sizing:border-box;flex:none;margin-top:9px"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;line-height:1.6;font-weight:300;color:#ddd6c8">Was steht
+          eigentlich noch offen?</div></div>
+    </div>
+
+    <div class="unfurl" style="animation-delay:.42s;display:flex;gap:14px;padding-left:22px">
+      <svg width="15" height="15" viewBox="0 0 24 24" class="node" style="animation-delay:.62s;flex:none;margin-top:5px"><path d="M12 2.4l1.5 5.1 3.6-3.9-1.3 5.2 5-1.6-4 3.5 4.6 2.2-5.2.3 2.6 4.5-4.3-3-.5 5.2-1.9-4.9-3.4 4-.1-5.2-4.8 2 3.4-4-5.2-.6 4.8-2-3.5-3.9 5 1.5z" fill="#e8d3a4" opacity=".92"/></svg>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16.5px;line-height:1.65;font-weight:300;color:#f7f4ed">Vier
+          Punkte. Welche soll ich abarbeiten?</div>
+      </div>
+    </div>
+
+    <!-- Die Frage selbst. Anders als bei ja/nein steht hier keine
+         Entscheidung an, sondern eine Auswahl - deshalb kein warnendes
+         Messing über der ganzen Karte, nur über dem, was gewählt ist. -->
+    <div class="unfurl" style="animation-delay:.56s;padding-left:43px;padding-right:0">
+      <div class="mono" style="font-size:9px;letter-spacing:.26em;color:#a3906c;
+        margin-bottom:12px">AUSWAHL</div>
+      <div style="display:flex;flex-direction:column">
+      <div class="wahl an">
+        <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2a2119" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4.5 4.5L19 7"/></svg></span>
+        <div style="flex:1;min-width:0">
+          <div class="titel">Diffs anzeigen</div>
+        </div>
+      </div>
+      <div class="wahl an">
+        <span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2a2119" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4.5 4.5L19 7"/></svg></span>
+        <div style="flex:1;min-width:0">
+          <div class="titel">Bash-Befehle erklären</div>
+        </div>
+      </div>
+      <div class="wahl">
+        <span class="tick"></span>
+        <div style="flex:1;min-width:0">
+          <div class="titel">Kontext aufschlüsseln</div>
+        </div>
+      </div>
+      <div class="wahl">
+        <span class="tick"></span>
+        <div style="flex:1;min-width:0">
+          <div class="titel">Git-Stand einblenden</div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Die Zahl links sagt, wo man steht, ohne dass man zählt. -->
+      <div style="display:flex;align-items:center;gap:14px;margin-top:16px">
+        <span class="mono" style="font-size:10.5px;color:#a89f8f;flex:1">2 von 4
+          gewählt</span>
+        <button style="padding:12px 16px;border-radius:999px;font-size:13px;
+          font-weight:300;background:transparent;border:none;color:#a89f8f;
+          font-family:inherit">Alle</button>
+        <button class="gilt" style="padding:12px 28px;border-radius:999px;font-size:13.5px;
+          font-weight:400;border:none;color:#2a2119;font-family:inherit;
+          letter-spacing:.02em;background:linear-gradient(155deg,#f0dcae,#d6b678);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.5),
+            0 4px 12px -4px rgba(214,182,120,.5)">Loslegen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Auch bei einer offenen Frage bleibt die Eingabe erreichbar: manchmal
+       ist die richtige Antwort keine der vier. -->
+  <div style="flex:none;padding:18px 22px 38px 22px;z-index:3">
+    <div class="gilt inked" style="border-radius:999px;padding:8px 8px 8px 22px;display:flex;
+      align-items:center;gap:10px;background:rgba(239,236,229,.035);
+      backdrop-filter:blur(18px)">
+      <span style="flex:1;color:#9a9184;font-size:14.5px;font-weight:300">Oder etwas
+        anderes …</span>
+      <button style="width:36px;height:36px;border-radius:50%;flex:none;border:none;
+        display:grid;place-items:center;background:rgba(239,236,229,.06)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9287"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg></button>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

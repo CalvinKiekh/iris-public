@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    /* 576 × 288, monochrom grün. Rund 44 Zeichen je Zeile, elf Zeilen -
+       genug für zwei, drei Wortmeldungen plus die offene Frage. Die Krone
+       scrollt durch den Rest. */
+    body{margin:0;background:#000;color:#7dff9b;
+      font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+      -webkit-font-smoothing:none}
+    a{color:#7dff9b} a:hover{color:#a8ffc0}
+    /* Monochrom grün, weil die Optik nichts anderes hergibt: ein Kanal,
+       durchsichtig gegen die Welt. Deshalb auch reines Schwarz als Grund -
+       Schwarz ist auf einer Brille nichts, also durchsichtig. Keine Flächen,
+       keine Schatten, keine Verläufe: was hell ist, liegt vor der Welt. */
+    @keyframes ride{0%,100%{transform:translateY(0)}50%{transform:translateY(38px)}}
+    @keyframes blink{50%{opacity:.3}}
+  </style>
+</helmet>
+
+<!-- Nur Schrift, keine Grafik: eine Zeile darf nie umbrechen, weil beim
+     Gehen niemand einer zweiten Zeile hinterhersieht. -->
+<div style="width:576px;height:288px;background:#000;color:#7dff9b;display:flex;
+  flex-direction:column;font-size:19px;line-height:22px">
+
+  <!-- Statuszeile: eine, bricht nie um -->
+  <div style="display:flex;gap:10px;align-items:center;height:22px;flex:none;
+    border-bottom:1px solid rgba(125,255,155,.45);padding:0 7px 3px;font-size:15px;line-height:1;
+    overflow:hidden;white-space:nowrap">
+    <span style="flex:none">iris</span>
+    <svg width="66" height="9" viewBox="0 0 66 9" style="flex:none">
+      <line x1="1.5" y1="4.5" x2="64.5" y2="4.5" stroke="#7dff9b" stroke-opacity=".26"
+        stroke-width="2" stroke-linecap="round"/>
+      <line x1="1.5" y1="4.5" x2="18.5" y2="4.5" stroke="#7dff9b" stroke-width="2.6"
+        stroke-linecap="round"/>
+      <circle cx="18.5" cy="4.5" r="2.4" fill="#7dff9b"/></svg>
+    <span style="flex:none;font-size:13px">27%</span>
+    <!-- Der Zustand in einem Wort: FRAGT, ARBEITET, FERTIG. Mehr liest
+         niemand, der nebenbei geht. -->
+    <span style="flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis">FRAGT</span>
+  </div>
+
+  <div style="flex:1;min-height:0;display:flex;overflow:hidden">
+
+    <!-- Der Verlauf: die Krone scrollt hier, deshalb fadet er oben aus -->
+    <div style="flex:1;min-width:0;padding:8px 5px 0 7px;display:flex;flex-direction:column;
+      justify-content:flex-end;gap:10px;overflow:hidden;
+      -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16px);
+      mask-image:linear-gradient(180deg,transparent 0,#000 16px)">
+
+      <div style="display:flex;gap:8px;font-size:17px;line-height:20px">
+        <span style="flex:none;opacity:.55;font-size:13px;line-height:20px">◦</span>
+        <span style="flex:1;min-width:0;opacity:.75">Lauf die Tests, bevor wir
+          weitermachen.</span>
+      </div>
+
+      <div style="display:flex;gap:8px;font-size:17px;line-height:20px">
+        <span style="flex:none;font-size:15px">✳</span>
+        <span style="flex:1;min-width:0">Alle 59 Prüfungen grün.</span>
+      </div>
+
+      <div style="display:flex;gap:8px;font-size:17px;line-height:20px">
+        <span style="flex:none;opacity:.55;font-size:13px;line-height:20px">◦</span>
+        <span style="flex:1;min-width:0;opacity:.75">Bau das Dashboard und zeig mir,
+          was läuft.</span>
+      </div>
+
+      <div style="display:flex;gap:8px;font-size:17px;line-height:20px">
+        <span style="flex:none;font-size:15px">✳</span>
+        <span style="flex:1;min-width:0">Die Registry steht. Für die Ansicht lege ich
+          eine Datei an.</span>
+      </div>
+
+    </div>
+
+    <!-- Die Krone: ihr Daumen zeigt, wo im Verlauf man steht -->
+    <div style="flex:none;width:9px;padding:6px 3px 6px 0;display:flex">
+      <div style="width:3px;border-radius:2px;background:rgba(125,255,155,.22);
+        position:relative;margin-left:auto">
+        <div style="width:3px;height:34px;border-radius:2px;opacity:.75;
+          background:linear-gradient(180deg,rgba(125,255,155,.3),#7dff9b,
+            rgba(125,255,155,.3));
+          animation:ride 5s ease-in-out infinite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gepinnt: die offene Frage bleibt sichtbar, egal wie weit man
+       zurückgescrollt hat. -->
+  <div style="flex:none;padding:5px 8px 9px;
+    background:#000">
+    <div style="border:1.5px solid rgba(125,255,155,.75);border-radius:16px;
+      padding:6px 11px;box-shadow:0 0 18px -4px rgba(125,255,155,.35),
+        inset 0 0 22px -12px rgba(125,255,155,.5)">
+      <div style="display:flex;gap:9px;align-items:baseline;font-size:13px;line-height:1;
+        letter-spacing:.12em">
+        <span style="animation:blink 1.6s steps(1) infinite">●</span>
+        <span>FREIGABE</span>
+        <span style="flex:1;text-align:right;opacity:.7">KRONE</span>
+      </div>
+      <div style="font-size:19px;line-height:22px;margin-top:4px;overflow:hidden">Datei
+        anlegen <span style="opacity:.7">· dashboard.js</span></div>
+      <!-- JA und NEIN als Wörter, nicht als Symbole: die Krone wählt, ein
+           Druck bestätigt - es gibt keinen Zeiger, der auf ein Icon zeigt. -->
+      <div style="display:flex;gap:7px;margin-top:5px">
+        <div style="flex:1.4;text-align:center;background:#7dff9b;color:#000;
+          padding:2px 0;font-size:16px;border-radius:999px">JA</div>
+        <div style="flex:1;text-align:center;border:1px solid #7dff9b;padding:1px 0;
+          font-size:16px;border-radius:999px">NEIN</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

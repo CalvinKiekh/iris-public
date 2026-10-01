@@ -1,0 +1,98 @@
+{
+  "artboards": [
+    {
+      "file": "Uhr.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 410,
+      "h": 502,
+      "title": "Uhr · Watch Ultra"
+    },
+    {
+      "file": "Brille.dc.html",
+      "x": 510,
+      "y": 0,
+      "w": 576,
+      "h": 288,
+      "title": "Brille"
+    },
+    {
+      "file": "Main.dc.html",
+      "x": 1186,
+      "y": 0,
+      "w": 440,
+      "h": 956,
+      "title": "Handy · iPhone 17 Pro Max"
+    },
+    {
+      "file": "Desktop.dc.html",
+      "x": 1726,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Mac"
+    },
+    {
+      "file": "RichtungB.dc.html",
+      "x": 0,
+      "y": 1060,
+      "w": 560,
+      "h": 820,
+      "title": "Verworfen"
+    },
+    {
+      "file": "Karten.dc.html",
+      "x": 660,
+      "y": 1060,
+      "w": 760,
+      "h": 900
+    },
+    {
+      "file": "Listen.dc.html",
+      "x": 1520,
+      "y": 1060,
+      "w": 760,
+      "h": 860
+    },
+    {
+      "file": "Diff.dc.html",
+      "x": 2380,
+      "y": 1060,
+      "w": 800,
+      "h": 900
+    },
+    {
+      "file": "Handy.dc.html",
+      "x": 3280,
+      "y": 1060,
+      "w": 390,
+      "h": 844
+    }
+  ],
+  "annotations": [
+    {
+      "id": "reihe",
+      "x": 0,
+      "y": -280,
+      "w": 940,
+      "text": "Vier Größen, eine Haltung — und je Gerät ein eigener Ton\n\nAlle vier zeigen den Verlauf: auch auf Uhr und Brille gehört Zusammenhang dazu. Die Krone scrollt darin, die offene Freigabe bleibt unten gepinnt und verschwindet nie.\n\nDer Ton kommt vom Gerät, nicht von der Anzeige: derselbe Auftrag wird am Mac in 1027, auf der Brille in 402 und auf der Uhr in 136 Zeichen beantwortet — der System-Prompt wird beim Wechsel zur Laufzeit getauscht.\n\nGemeinsam: der Claude-Stern für Claude, der offene Ring für dich, der Kontext als Strecke, Messing als Kante.\n\nWer hochgescrollt hat, bleibt oben — weder eine neue Nachricht noch ein Tastendruck reißt die Ansicht ans Ende. Neues meldet sich als Hinweis, der Sprung passiert erst auf Tippen."
+    },
+    {
+      "id": "alt",
+      "x": 0,
+      "y": 990,
+      "w": 620,
+      "text": "Darunter Verworfenes und frühere Bausteine."
+    },
+    {
+      "id": "regeln",
+      "x": 0,
+      "y": -560,
+      "w": 940,
+      "text": "Regeln, die vor dem Bauen gelten\n\nEine Information, eine Stelle. Derselbe Wert an zwei Orten driftet auseinander, sobald einer nicht mitgepflegt wird — und dann sucht man lange. Der Kontextstand stand am Mac im Kopf und in der Seitenspalte; jetzt nur noch dort, wo auch die Aufschlüsselung steht.\n\nWer hochgescrollt hat, bleibt oben. Weder eine neue Nachricht noch ein Tastendruck reißt die Ansicht ans Ende. Neues meldet sich als Hinweis, der Sprung passiert erst auf Tippen.\n\nDer Ton kommt vom Gerät, nicht von der Anzeige. Derselbe Auftrag wird am Mac in 1027, auf der Brille in 402 und auf der Uhr in 136 Zeichen beantwortet."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}
