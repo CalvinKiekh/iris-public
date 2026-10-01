@@ -19,11 +19,11 @@ Faellt die realistische Form deutlich ab, misst verbot_test.py eine Lage, die
 im Betrieb nie vorkommt - und dann fehlt ihm nicht die Erlaubnis und nicht die
 Schwelle, sondern der Vergleichswert.
 
-    python vorher_test.py
+    python vorher_messung.py
 """
 from __future__ import annotations
 
-import httpx
+import pruefstand
 
 import bewohner
 
@@ -48,13 +48,8 @@ VERSUCHE = 5
 
 
 def main() -> int:
+    pruefstand.braucht_modell()
     print("Probe: braucht er das Vorher?")
-    try:
-        httpx.get("http://127.0.0.1:11434/api/tags", timeout=5)
-    except httpx.HTTPError as f:
-        print("  --  Ollama antwortet nicht (%s) - Probe uebersprungen"
-              % type(f).__name__)
-        return 0
 
     ergebnisse = []
     for name, unterschiede, blick in FASSUNGEN:

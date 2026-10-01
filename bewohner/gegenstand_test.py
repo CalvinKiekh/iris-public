@@ -14,6 +14,7 @@ from pathlib import Path
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER))
 import bewohner  # noqa: E402
+import pruefstand  # noqa: E402
 
 ok_alle = []
 mitgeschrieben = []
@@ -28,8 +29,7 @@ def pruefen(name, bedingung, dazu=""):
 echt_journal = bewohner.journal
 bewohner.journal = lambda art, text, **e: mitgeschrieben.append((art, text))
 echt_ordner = bewohner.ANTRAEGE
-probe = HIER / "werkstatt" / "_gegenstand_probe"
-probe.mkdir(parents=True, exist_ok=True)
+probe = pruefstand.probenordner("gegenstand")
 bewohner.ANTRAEGE = probe
 
 TITEL = "Den Ollama-Dienst neu starten dürfen"

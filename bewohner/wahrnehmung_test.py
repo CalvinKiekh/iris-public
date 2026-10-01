@@ -7,6 +7,9 @@ import sys
 import time
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_bewohner()
+
 sys.path.insert(0, str(Path(__file__).parent))
 import gedaechtnis
 import wahrnehmung

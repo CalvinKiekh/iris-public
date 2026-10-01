@@ -11,6 +11,8 @@ from pathlib import Path
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER))
 import bewohner  # noqa: E402
+import probenort  # noqa: E402
+import pruefstand  # noqa: E402
 
 ok_alle = []
 
@@ -21,7 +23,8 @@ def pruefen(name, bedingung, dazu=""):
 
 
 # Auf einer Kopie arbeiten, das echte Journal bleibt unberührt.
-probe = HIER / "werkstatt" / "_schwaerz_probe.jsonl"
+ordner = pruefstand.probenordner("schwaerz")
+probe = ordner / "journal.jsonl"
 echt = bewohner.JOURNAL
 bewohner.JOURNAL = probe
 
@@ -66,6 +69,6 @@ n = bewohner.journal_saeubern(["Der Schlüssel liegt im Flur."])
 pruefen("nur Ähnlichkeit schwärzt NICHT", n == 0, f"{n} Zeilen")
 
 bewohner.JOURNAL = echt
-probe.unlink(missing_ok=True)
+probenort.wegraeumen(ordner)
 print(f"\n{sum(ok_alle)} von {len(ok_alle)} bestanden")
 sys.exit(0 if all(ok_alle) else 1)

@@ -20,6 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 import probenort
+import pruefstand
 import anlaesse
 
 GESAMT = 0
@@ -409,13 +410,18 @@ def ganze_kette() -> None:
     Push waere genau der Selbsttest, den er ausgeschlossen hat. Was diese
     Probe zeigt, ist der Weg: dass die Kette haelt, wenn der Bewohner sie geht.
     """
-    import bewohner
-    sys.path.insert(0, str(Path(__file__).parent / "werkstatt" / "werkzeuge"))
-    import ansprechen
-
     print("\n" + "=" * 70)
     print("Die ganze Kette - in eine Wegwerf-Werkstatt, ohne Push")
     print("=" * 70)
+    if not (pruefstand.bewohner_da() and pruefstand.werkzeug_da("ansprechen")):
+        # The probe log has to lie inside his workshop - vermerken() refuses
+        # anything else - so without him there is nowhere to put it.
+        print("  --  hier wohnt kein Bewohner")
+        return
+
+    import bewohner
+    sys.path.insert(0, str(Path(__file__).parent / "werkstatt" / "werkzeuge"))
+    import ansprechen
 
     echte = {"JOURNAL": bewohner.JOURNAL, "ARTEN": bewohner.GEDAECHTNIS_ARTEN,
              "VERLAUF": ansprechen.VERLAUF, "darf": ansprechen.darf,

@@ -6,6 +6,9 @@ import einstellungen
 import sys
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_werkzeug("sehen")
+
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent / "werkstatt" / "werkzeuge"))
 import werkzeuge
@@ -47,8 +50,7 @@ if not am_bildschirm():
     print("  Werkzeugs: Der Bewohner laeuft in Sitzung 1 und sieht den")
     print("  Bildschirm. Zum Messen die Probe an der Konsole starten, oder")
     print("  den Bewohner fragen: \"Was siehst du auf dem Bildschirm?\"")
-    print("\n0 von 0 bestanden")
-    raise SystemExit(0)
+    pruefstand.ueberspringen("Windows-Sitzung 0 hat keinen Bildschirm")
 
 
 def pruefen(name, bedingung, dazu=""):

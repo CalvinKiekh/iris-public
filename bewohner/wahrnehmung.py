@@ -104,7 +104,9 @@ def _gesehen_lesen() -> dict:
 
 
 def _gesehen_schreiben(d: dict) -> None:
-    WERKSTATT.mkdir(parents=True, exist_ok=True)
+    # The folder of the file that is written: a probe bends GESEHEN, and
+    # WERKSTATT.mkdir made the real workshop anyway.
+    GESEHEN.parent.mkdir(parents=True, exist_ok=True)
     t = GESEHEN.with_suffix(".json.tmp")
     t.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
     t.replace(GESEHEN)

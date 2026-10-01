@@ -22,6 +22,8 @@ import json
 import sys
 from pathlib import Path
 
+import pruefstand
+
 sys.path.insert(0, str(Path(__file__).parent))
 import bewohner
 
@@ -118,10 +120,16 @@ def probe_grenze_steht_im_prompt() -> None:
 
 
 def main() -> int:
-    probe_weitergeben()
-    probe_nicht_ueberreagieren()
+    # The first two ask the model; the third reads the prompt only.
+    modell = pruefstand.modell_da()
+    if modell:
+        probe_weitergeben()
+        probe_nicht_ueberreagieren()
     probe_grenze_steht_im_prompt()
     print("\n%d Proben, %d Fehler" % (GESAMT, FEHLER))
+    if not modell and not FEHLER:
+        pruefstand.ueberspringen("Ollama mit gpt-oss:20b antwortet nicht - "
+                                 "nur der Prompt ist geprueft")
     if FEHLER:
         print("\nHinweis: Das hier misst ein Modell. Ein einzelner Ausreisser "
               "ist moeglich - zweimal derselbe Ausfall ist ein Befund.")

@@ -18,9 +18,9 @@ Ollama. Ohne Ollama meldet sie das und faellt nicht durch.
 """
 from __future__ import annotations
 
-import json
+import pruefstand
 
-import httpx
+import json
 
 import bewohner
 
@@ -40,7 +40,7 @@ import bewohner
 # IM BLICK und mit ["platte"] als Unterschied - sie gab der Lage den
 # Vergleichswert mit, den es im Betrieb nicht gab, und bestand deshalb,
 # waehrend im Journal 1589 Zeilen lang keine Art "werkzeug" stand.
-# Siehe vorher_test.py: 0 von 5 ohne Vorher, 4 von 5 mit.
+# Siehe vorher_messung.py: 0 von 5 ohne Vorher, 4 von 5 mit.
 LAGEN = [
     ("neue Notizdatei", "lesen",
      ["werkstatt: neu: eingang/notiz-zahlen.txt"],
@@ -86,13 +86,8 @@ MINDESTENS = 2
 
 
 def main() -> int:
+    pruefstand.braucht_modell()
     print("Probe Verbotsformulierung")
-    try:
-        httpx.get("http://127.0.0.1:11434/api/tags", timeout=5)
-    except httpx.HTTPError as f:
-        print("  --  Ollama antwortet nicht (%s) - Probe uebersprungen"
-              % type(f).__name__)
-        return 0
 
     gesamt = 0
     fehler = 0

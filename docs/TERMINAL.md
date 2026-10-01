@@ -11,7 +11,7 @@ ist in `BEFUNDE.md` nachgewiesen.
 make install-hooks     # trägt die Hooks in ~/.claude/settings.json ein
 make hooks-status      # was ist eingetragen?
 make uninstall-hooks   # nimmt nur die von iris wieder heraus
-make check-hooks       # Ende-zu-Ende-Test gegen eine Brücke auf Port 8778
+make check-hooks       # Ende-zu-Ende-Test gegen eine Brücke auf Port 8777
 ```
 
 Vor jedem Schreiben entsteht eine Sicherung unter

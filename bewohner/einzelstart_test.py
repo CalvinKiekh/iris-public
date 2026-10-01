@@ -31,6 +31,9 @@ import threading
 import time
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_windows()
+
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER))
 import bewohner

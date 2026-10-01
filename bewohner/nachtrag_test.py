@@ -10,6 +10,9 @@ import sys
 import time
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_bewohner()
+
 GESPRAECH = Path(__file__).parent / "werkstatt" / "gespraech"
 JOURNAL = Path(__file__).parent / "werkstatt" / "journal.jsonl"
 

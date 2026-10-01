@@ -1,6 +1,6 @@
 """Zeigt, was der Bewohner über sich selbst misst.
 
-    python -X utf8 selbst_test.py
+    python -X utf8 selbst_messung.py
 """
 import sys
 from pathlib import Path

@@ -22,6 +22,9 @@ import sys
 import time
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_bewohner("werkzeuge.json")
+
 sys.path.insert(0, str(Path(__file__).parent))
 import bewohner as B
 

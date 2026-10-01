@@ -19,7 +19,7 @@ import time
 import urllib.error
 import urllib.request
 
-PORT = 8778
+PORT = 8777
 BASE = f"http://127.0.0.1:{PORT}"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HOOK = os.path.join(ROOT, "hooks", "iris_hook.py")

@@ -19,6 +19,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import pruefstand
+pruefstand.werkzeuge_einbinden()
+
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER))
 import gedaechtnis

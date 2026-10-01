@@ -18,12 +18,22 @@ Calvin. Ohne Zugangsdaten meldet dieses Werkzeug das ehrlich, statt zu raten.
 Pfade haengen am Ort dieser Datei. Nur Standardbibliothek.
 """
 
-from einstellungen import NAME
 import argparse
 import datetime
 import json
 import os
 import sys
+
+# einstellungen.py lives with his code: two levels up in the workshop
+# (werkstatt/werkzeuge/), one level up in the repo (bewohner/werkzeuge/).
+# A tool runs as a process of its own, so it has to look.
+_hier = os.path.dirname(os.path.abspath(__file__))
+for _ort in (os.path.dirname(os.path.dirname(_hier)), os.path.dirname(_hier)):
+    if os.path.isfile(os.path.join(_ort, "einstellungen.py")):
+        if _ort not in sys.path:
+            sys.path.insert(0, _ort)
+        break
+from einstellungen import NAME  # noqa: E402
 
 WERKZEUG_ORDNER = os.path.dirname(os.path.abspath(__file__))
 WERKSTATT_ORDNER = os.path.dirname(WERKZEUG_ORDNER)

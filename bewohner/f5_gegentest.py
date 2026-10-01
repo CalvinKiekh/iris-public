@@ -8,6 +8,10 @@ import sys
 import time
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_bewohner()
+pruefstand.braucht_werkzeug("erinnern")
+
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER / "werkstatt" / "werkzeuge"))
 import erinnern  # noqa: E402

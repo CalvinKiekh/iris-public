@@ -25,6 +25,8 @@ import tempfile
 import time
 from pathlib import Path
 
+import pruefstand
+
 sys.path.insert(0, str(Path(__file__).parent))
 import rueckblick as R
 
@@ -161,8 +163,11 @@ pruefen("Sätze ohne Werkzeug bleiben unberührt",
         not R._werkzeug_erfunden("Ich habe ein Gedächtnis gebaut.", NAMEN))
 pruefen("ohne Werkzeugliste wird nicht gesperrt",
         not R._werkzeug_erfunden(ERFUNDEN, []))
-pruefen("die echte Liste wird gelesen", len(R.werkzeugnamen()) == 10,
-        ", ".join(R.werkzeugnamen()[:3]) + " …")
+if pruefstand.bewohner_da():
+    pruefen("die echte Liste wird gelesen", len(R.werkzeugnamen()) == 10,
+            ", ".join(R.werkzeugnamen()[:3]) + " …")
+else:
+    print("  --  die echte Liste: hier wohnt kein Bewohner")
 
 print("\nJournal und Berichte bleiben getrennt:")
 JZEILEN = [{"ts": time.time(), "kind": "fehler", "text": f"Absturz {i}"}

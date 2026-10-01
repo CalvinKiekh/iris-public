@@ -318,7 +318,7 @@ def block(werkstatt: Path | None = None, frage: str = "") -> str:
         #
         # DIESE FASSUNG IST GEMESSEN DIE BESTE VON VIERN, und die drei anderen
         # stehen hier, damit niemand sie noch einmal versucht. Gemessen mit
-        # kann_sprechform_test.py, je fuenf Laeufe:
+        # kann_sprechform_messung.py, je fuenf Laeufe:
         #
         #   diese Fassung          Anzahl 0/5, Doppelung 5/5, Satz 1 ~4,6 Posten
         #   "GENAU ZWEI, zaehl ab" verschob den Katalog nach Satz 1

@@ -21,6 +21,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pruefstand
+
 import probenort
 import kann
 
@@ -137,7 +139,10 @@ def probe_echte_listen() -> None:
     k = kann.kurz()
     print(f"  {k['wie_viele']} Eintraege, davon noch nie benutzt: "
           f"{', '.join(k['noch_nie_benutzt']) or 'keiner'}")
-    pruefe(k["wie_viele"] >= 20, "die Listen sind da")
+    if pruefstand.bewohner_da():
+        pruefe(k["wie_viele"] >= 20, "die Listen sind da")
+    else:
+        print("  --  die Listen: hier wohnt kein Bewohner")
     pruefe(len(json.dumps(k, ensure_ascii=False)) < 1000,
            "kurz ist %d Zeichen - vertretbar in jeder Antwort"
            % len(json.dumps(k, ensure_ascii=False)))

@@ -351,10 +351,11 @@ def probe_unser_ort() -> None:
            % [o for o in orte if len(Path(o).parts) < 3])
     pruefe(all(o == o.lower() for o in orte),
            "alle klein geschrieben - PowerShell vergleicht klein")
-    pruefe(any("mcp-test" in o for o in orte), "das Projekt ist dabei")
-    pruefe(any("git" in o for o in orte),
-           "und die Git-Installation, in der tail, grep und sed stecken: %s"
-           % [o for o in orte if "git" in o])
+    pruefe(str(haus.HIER.resolve()).lower() in orte, "das Projekt ist dabei")
+    if sys.platform == "win32":
+        pruefe(any("git" in o for o in orte),
+               "und die Git-Installation, in der tail, grep und sed stecken: %s"
+               % [o for o in orte if "git" in o])
 
     ps = haus._orte_fuer_ps()
     pruefe(ps.count("'") == 2 * len(orte) and "," in ps,

@@ -24,6 +24,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pruefstand
+
 import gespraech
 import ich
 
@@ -109,8 +111,11 @@ def probe_block() -> None:
                "ohne Namen wird keiner erfunden")
 
     # Wohnort und seit wann - gemessen, nicht behauptet.
-    seit = gespraech._wohnt_seit(HIER / "werkstatt")
-    pruefe(seit and seit in b, "seit wann er wach ist, aus dem Journal: %s" % seit)
+    if pruefstand.bewohner_da():
+        seit = gespraech._wohnt_seit(HIER / "werkstatt")
+        pruefe(seit and seit in b, "seit wann er wach ist, aus dem Journal: %s" % seit)
+    else:
+        print("  --  seit wann er wach ist: kein Journal, hier wohnt kein Bewohner")
 
     # Ohne Werkstatt kein Absturz und keine erfundene Auskunft.
     leer = Path(tempfile.mkdtemp(prefix="ich_leer_"))

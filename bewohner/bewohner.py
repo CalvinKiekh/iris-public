@@ -33,10 +33,12 @@ import httpx
 # Strom da ist, in eine Logdatei schreiben statt abzustuerzen.
 def _ausgabe_absichern() -> None:
     protokoll = Path(__file__).parent / "werkstatt" / "bewohner.log"
-    protokoll.parent.mkdir(parents=True, exist_ok=True)
     for name in ("stdout", "stderr"):
         strom = getattr(sys, name, None)
         if strom is None:
+            # Only when the log is needed: an import from a console (every
+            # probe) must not create the workshop as a side effect.
+            protokoll.parent.mkdir(parents=True, exist_ok=True)
             setattr(sys, name, open(protokoll, "a", encoding="utf-8",
                                     errors="replace", buffering=1))
         elif hasattr(strom, "reconfigure"):
@@ -1374,7 +1376,7 @@ def _unterschied(schluessel: str, alt, neu) -> str:
     """Was sich geaendert hat, als Satz mit VORHER und JETZT.
 
     Vorher stand hier nur der Schluesselname. Gemessen am 12.09. um 10:46
-    (vorher_test.py, je fuenf Versuche ueber frage_gpt_oss, dieselbe Lage):
+    (vorher_messung.py, je fuenf Versuche ueber frage_gpt_oss, dieselbe Lage):
 
         {"frei_gb": 41}, veraendert ["frei_gb"]               0 von 5
         {"frei_gb": 41}, veraendert ["frei_gb: 41, vorher 61"] 4 von 5

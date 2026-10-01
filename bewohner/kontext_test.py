@@ -28,6 +28,8 @@ import json
 import sys
 from pathlib import Path
 
+import probenort
+import pruefstand
 import gespraech
 import lage
 
@@ -44,10 +46,25 @@ def pruefe(bedingung, was: str) -> None:
         FEHLER += 1
 
 
+_ORT: Path | None = None
+
+
+def ablage() -> Path:
+    """Next to the real workshop where he lives - the prompt reads haus.json
+    from its parent - and a throwaway folder anywhere else."""
+    global _ORT
+    if _ORT is None:
+        if pruefstand.bewohner_da():
+            _ORT = HIER / "werkstatt" / "_kontext_probe"
+            _ORT.mkdir(exist_ok=True)
+        else:
+            _ORT = probenort.ablage("kontext")
+    return _ORT
+
+
 def prompt(frage: str) -> str:
     """Der Prompt, den der Betrieb bauen wuerde - ohne das Modell zu fragen."""
-    probe = HIER / "werkstatt" / "_kontext_probe"
-    probe.mkdir(exist_ok=True)
+    probe = ablage()
     g = gespraech.Gespraech(probe, lambda *a, **k: None, Path("nicht-da.wav"))
     n = g._antwort_holen(frage, {"state": "wach", "brake": None,
                                  "open_task": None},
@@ -95,10 +112,13 @@ def probe_rechnerblock() -> None:
            "Wie lange läuft der Rechner schon?",
            "Wer belegt den meisten Speicher?",
            "Wie warm ist die Grafikkarte?")
-    for f in mit:
-        p = prompt(f)
-        pruefe("mein_rechner" in p,
-               "dabei, weil danach gefragt ist: %r" % f)
+    if (HIER / "werkstatt" / "haus.json").is_file():
+        for f in mit:
+            p = prompt(f)
+            pruefe("mein_rechner" in p,
+                   "dabei, weil danach gefragt ist: %r" % f)
+    else:
+        print("  --  der Block selbst: kein haus.json, hier wohnt kein Bewohner")
 
     ohne = ("Schnurpsel wrgl bitte?", "Läuft das schon lange?",
             "Wie geht es dir?", "Wie heißt meine Tochter?",
@@ -149,5 +169,7 @@ if __name__ == "__main__":
     probe_rechnerblock()
     probe_uhrzeit()
     probe_kein_kahlschlag()
+    if _ORT is not None and not pruefstand.bewohner_da():
+        probenort.wegraeumen(_ORT)
     print("\n%d von %d bestanden" % (GESAMT - FEHLER, GESAMT))
     raise SystemExit(1 if FEHLER else 0)

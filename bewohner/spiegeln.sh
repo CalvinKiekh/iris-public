@@ -23,6 +23,26 @@ if ! grep -q "^import einstellungen" "$PROBE"; then
   echo "aus dem Repo auf den PC bringen, dann wieder spiegeln." >&2
   exit 1
 fi
+# Dasselbe fuer die Werkzeuge (29.09.2026): Im Repo finden sie
+# einstellungen.py von jedem Ort aus, und platzverlauf besteht die Abnahme
+# ohne zu loeschen. Die alten auf dem PC koennen beides nicht.
+scp -q "$PC:mcp-test/werkstatt/werkzeuge/platzverlauf.py" "$PROBE" 2>/dev/null || : > "$PROBE"
+if ! grep -q "_platzverlauf_selbsttest" "$PROBE"; then
+  rm -f "$PROBE"
+  echo "Abgebrochen: die Werkzeuge auf $PC sind noch die alten." >&2
+  echo "Erst dort 'python -X utf8 einrichten.py --ersetzen' laufen lassen," >&2
+  echo "dann wieder spiegeln." >&2
+  exit 1
+fi
+# Und die Proben: seit pruefstand.py ueberspringen sie, statt faelschlich zu
+# bestehen, und drei heissen jetzt *_messung.py. Ohne pruefstand.py auf dem
+# PC kaemen die alten zurueck, die umbenannten unter ihrem alten Namen.
+if ! scp -q "$PC:mcp-test/pruefstand.py" "$PROBE" 2>/dev/null; then
+  rm -f "$PROBE"
+  echo "Abgebrochen: auf $PC fehlt pruefstand.py - die Proben dort sind die alten." >&2
+  echo "Erst den Stand aus dem Repo auf den PC bringen, dann wieder spiegeln." >&2
+  exit 1
+fi
 rm -f "$PROBE"
 scp -q "$PC:mcp-test/*.py" .
 scp -q "$PC:tts-test/sprich.py" "$PC:tts-test/normalisieren.py" .

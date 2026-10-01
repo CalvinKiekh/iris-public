@@ -1,7 +1,7 @@
 """Misst die Sprechform der Faehigkeitsantwort - mehrfach, nicht einmal.
 
-    python -X utf8 kann_sprechform_test.py            5 Laeufe
-    python -X utf8 kann_sprechform_test.py --n=10     mehr
+    python -X utf8 kann_sprechform_messung.py            5 Laeufe
+    python -X utf8 kann_sprechform_messung.py --n=10     mehr
 
 WARUM DIESE PROBE EXISTIERT: Am 12.09. habe ich die Anweisung in kann.block()
 dreimal nachgeschaerft und jedes Mal an EINEM Lauf gemessen. Dieselbe
@@ -40,6 +40,8 @@ import re
 import sys
 import threading
 from pathlib import Path
+
+import pruefstand
 
 HIER = Path(__file__).resolve().parent
 FRAGE = "Was kannst du alles?"
@@ -105,6 +107,7 @@ def einmal() -> str:
 
 
 def main() -> int:
+    pruefstand.braucht_modell()
     wie_oft = 5
     for a in sys.argv[1:]:
         if a.startswith("--n="):

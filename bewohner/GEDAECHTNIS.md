@@ -11,12 +11,34 @@ Rechner, der spiegelt, nur nicht mehr im Git (`.gitignore`). Im älteren
 Verlauf stehen sie noch — ein Repo aus dieser Zeit wird deshalb nie
 weitergegeben, sondern nur eine Kopie aus `tools/uebergabe.py`.
 
-## Neu anfangen: nichts vorzubefüllen
+## Neu anfangen: leeres Gedächtnis, aber seine Werkzeuge
 
 Ein neuer Bewohner beginnt mit leerem Gedächtnis, und das ist richtig so.
 Er legt `werkstatt/` beim ersten Start selbst an und jede Datei darin beim
-ersten Schreiben. Fehlt eine, liest er sie als leer — keine davon muss von
-Hand angelegt werden.
+ersten Schreiben. Fehlt eine, liest er sie als leer.
+
+Eines aber wird vorher eingerichtet, einmal, mit
+
+```
+python -X utf8 einrichten.py
+```
+
+Das sind keine Erinnerungen, sondern das, womit er arbeitet:
+
+- **Die zehn Werkzeuge** aus `bewohner/werkzeuge/` nach
+  `werkstatt/werkzeuge/`. Er lädt sie nur von dort, und ein Teil seines
+  eigenen Codes braucht sie (`erinnern`, `sehen`, `ansprechen`). Jedes geht
+  durch seine eigene Abnahme — Quelltext lesen, `--selbsttest` laufen
+  lassen — und wird erst dann in `werkzeuge.json` eingetragen. `lesen`
+  besteht nur mit laufendem Ollama, `sehen` nur unter Windows.
+- **`faehigkeiten.json`**: was in ihm eingebaut ist, mit Namen und Zweck,
+  alles als noch nicht erprobt. Die Liste des ersten Bewohners bleibt
+  draußen, weil sie seine Erlebnisse festhält.
+
+Ein Recht bringt er schon im Code mit: `eingreifen.py` lässt ihn den
+Ollama-Dienst neu starten, wenn der nicht antwortet, und verwaiste
+`llama-server` beenden, die die Grafikkarte belegen, höchstens alle zehn
+Minuten und mit Eintrag im Journal. Wer das nicht will, nimmt es dort heraus.
 
 | Datei | Was darin steht | Wer schreibt |
 |---|---|---|
@@ -50,6 +72,23 @@ Nicht das Gedächtnis, sondern die Umgebung:
   `~/.config/iris/elevenlabs.key`.
 - Auf Windows startet ihn eine geplante Aufgabe:
   `bewohner/aufgabe-einrichten.ps1` in einer PowerShell ausführen.
+
+## Prüfen
+
+```
+python -X utf8 pruefen.py
+```
+
+lässt jede Probe einzeln laufen und zählt dreierlei getrennt: bestanden,
+übersprungen, fehlgeschlagen. Übersprungen wird, was hier fehlt — der
+Bewohner selbst, ein Werkzeug, das Modell, Windows —, mit einem Satz dazu.
+Wo kein Bewohner wohnt, laufen die meisten Proben trotzdem, in
+Wegwerf-Ordnern. Und keine darf dort eine Werkstatt anlegen: `pruefen.py`
+wertet das als Fehler.
+
+Nicht darin: die `*_messung.py`, die Zahlen zum Vergleichen ausgeben statt
+eines Urteils, und `schluesseltest_app.py`, das über die Brücke einen echten
+Bewohner befragt und neu startet — nur von Hand.
 
 ## Sichern und zurückspielen
 

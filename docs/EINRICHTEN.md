@@ -74,6 +74,14 @@ solange unter deinem Benutzerordner keine Projekte liegen (Inventar, Suche,
 Dienste) und ohne `gh auth login` (GitHub-Konten). Sind die drei Dinge da,
 muss alles grün sein.
 
+`make check-ci` prüft nur den Teil, der ohne all das auskommt: Syntax,
+alle Routen der Brücke gegen eine nachgebaute Sitzung, Übergabe, Anhänge,
+Wachen und die Proben des Bewohners, soweit sie ihn nicht selbst brauchen
+(dafür die Pakete aus `bewohner/requirements.txt`). Genau das führt GitHub
+bei jedem Push aus
+(`.github/workflows/check.yml`); dort muss es auch auf einer frischen
+Maschine grün sein.
+
 ### Aufs Handy
 
 ```bash
@@ -258,6 +266,11 @@ anderen Menschen gehört nie dazu. Er liest seinen Namen für dich aus derselben
 ```json
 "bewohner": {"tts": "C:\\Users\\anna\\tts-test"}
 ```
+
+Vor dem ersten Start einmal `python -X utf8 bewohner/einrichten.py`: Das
+gibt ihm seine Werkzeuge und die Liste dessen, was in ihm eingebaut ist.
+`python -X utf8 bewohner/pruefen.py` prüft danach, was auf der Maschine
+geht, und sagt bei allem, was übersprungen wird, warum.
 
 ---
 

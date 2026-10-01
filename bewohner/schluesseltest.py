@@ -18,6 +18,11 @@ import sys
 import time
 from pathlib import Path
 
+import pruefstand
+# Steps 1-4 write into his real memory, and step 2 restarts a process
+# that finds it by its own path - there is nothing to bend here.
+pruefstand.braucht_bewohner()
+
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER))
 

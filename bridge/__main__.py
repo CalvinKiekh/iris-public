@@ -136,7 +136,13 @@ def main():
     for s in servers:
         h, p_ = s.server_address[0], s.server_address[1]
         print(f"iris bridge lauscht auf http://{h}:{p_}")
-    print(f"  Öffnen mit: {url}")
+    if sys.stdout.isatty():
+        print(f"  Öffnen mit: {url}")
+    else:
+        # Under launchd or Docker this line ends up in a log that outlives
+        # the token's secrecy - `docker logs` keeps it for good.
+        print(f"  Öffnen mit: http://{cfg['host']}:{cfg['port']}/?token=…"
+              f"  (Token: python3 -m bridge --print-token)")
     threading.Thread(target=_selbsttest, args=(servers, cfg), daemon=True).start()
     if cfg["host"] in ("127.0.0.1", "localhost"):
         # Zwei verschiedene Lagen, die bisher denselben Satz bekamen. Auf dem

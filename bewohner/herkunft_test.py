@@ -21,6 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import probenort
+import pruefstand
 
 GESAMT = 0
 FEHLER = 0
@@ -205,6 +206,10 @@ def probe_riegel_am_termin() -> None:
     einer Sitzung, die es nie gab.
     """
     print("\nEine Probe kann keinen echten Termin anlegen")
+    if not (pruefstand.bewohner_da() and pruefstand.werkzeug_da("erinnern")):
+        # Measured against his real list of appointments; without him there is none.
+        print("  --  keine echte Terminliste: hier wohnt kein Bewohner")
+        return
     sys.path.insert(0, str(Path(__file__).parent / "werkstatt" / "werkzeuge"))
     import erinnern
     echt = Path(erinnern.DATEI)

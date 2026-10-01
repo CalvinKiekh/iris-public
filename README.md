@@ -177,7 +177,10 @@ Einrichten ist aufwendig und experimentell:
   Brücke. Pflicht ist nur `httpx`; Bilder, PDFs und Sprache sind abgestuft
   optional, die Sprachausgabe bringt PyTorch mit.
 - Was er braucht und was er selbst anlegt: `bewohner/GEDAECHTNIS.md`.
-  Er beginnt mit leerem Gedächtnis; nichts muss vorbefüllt werden.
+  Er beginnt mit leerem Gedächtnis; seine Werkzeuge bekommt er einmal mit
+  `bewohner/einrichten.py`.
+- Proben: `bewohner/pruefen.py` — bestanden, übersprungen, fehlgeschlagen,
+  getrennt gezählt.
 - Die Schnittstelle zur App: `docs/BEWOHNER.md`.
 - Start auf Windows: `bewohner/aufgabe-einrichten.ps1`.
 

@@ -1,7 +1,7 @@
 # iris - remote control for Claude Code sessions
 PY := python3
 
-.PHONY: run start stop restart status token ingest-token new-token check scan install-mcp uninstall-mcp install-agent uninstall-agent logs install-hooks uninstall-hooks hooks-status check-hooks check-typing check-feed ios ios-run ios-test ios-device
+.PHONY: run start stop restart status token ingest-token new-token check check-ci check-bewohner scan install-mcp uninstall-mcp install-agent uninstall-agent logs install-hooks uninstall-hooks hooks-status check-hooks check-typing check-feed ios ios-run ios-test ios-device
 
 run:            ## bridge im Vordergrund starten
 	$(PY) -m bridge
@@ -42,9 +42,10 @@ new-token:      ## Token neu würfeln (alte Clients fliegen raus)
 	@$(PY) -m bridge --new-token
 
 check:          ## Syntax und Selbsttest
-	@$(PY) -m compileall -q bridge >/dev/null && echo "python ok"
+	@$(PY) -W error::SyntaxWarning -m compileall -q -f bridge bewohner hooks tools tests clients >/dev/null && echo "python ok"
 	@command -v node >/dev/null && node --check web/app.js && node --check web/wheel.js && echo "js ok" || true
 	@$(PY) -m tests.feed
+	@$(PY) -m tests.routen
 	@$(PY) -m tests.smoke
 	@$(PY) -m tests.transfer
 	@$(PY) -m tests.transfer_http
@@ -72,6 +73,23 @@ uninstall-hooks: ## iris-Hooks wieder austragen, andere bleiben
 
 hooks-status:
 	@$(PY) -m bridge.install_hooks status
+
+check-ci:       ## Was ohne Claude Code geht - das, was GitHub bei jedem Push prueft
+	@$(PY) -W error::SyntaxWarning -m compileall -q -f bridge bewohner hooks tools tests clients >/dev/null && echo "python ok"
+	@node --check web/app.js && node --check web/wheel.js && echo "js ok"
+	@$(PY) -m tests.feed
+	@$(PY) -m tests.routen
+	@$(PY) -m tests.transfer
+	@$(PY) -m tests.transfer_http
+	@$(PY) -m tests.anhang
+	@$(PY) -m tests.aktualisieren
+	@$(PY) -m tests.sitzungen
+	@$(PY) -m tests.markdown
+	@$(PY) -m tests.wachen
+	@cd bewohner && $(PY) -X utf8 pruefen.py
+
+check-bewohner: ## Proben des Bewohners - was ohne ihn geht, laeuft; der Rest sagt, warum nicht
+	@cd bewohner && $(PY) -X utf8 pruefen.py
 
 check-typing:   ## Eintippen in echte Terminal-Sitzungen (öffnet kurz Terminal-Fenster, kostet etwas Kontingent)
 	python3 tests/tippen.py

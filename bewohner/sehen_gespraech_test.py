@@ -21,6 +21,9 @@ from einstellungen import NAMENS
 import sys
 from pathlib import Path
 
+import pruefstand
+pruefstand.werkzeuge_einbinden()
+
 import gespraech
 
 HIER = Path(__file__).resolve().parent

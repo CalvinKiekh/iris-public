@@ -7,6 +7,8 @@ Wenn diese Probe durchfaellt, kann eine andere Probe die Werkstatt loeschen.
 import sys
 from pathlib import Path
 
+import pruefstand
+
 sys.path.insert(0, str(Path(__file__).parent))
 import probenort
 
@@ -33,10 +35,11 @@ print("\nDer Fall vom 12.09.: die Probe hat frisch() vergessen")
 
 echt = probenort.ECHTE_WERKSTATT
 vorher_da = echt.exists()
-pruefen("die echte Werkstatt liegt da", vorher_da, str(echt))
+if pruefstand.bewohner_da():
+    pruefen("die echte Werkstatt liegt da", vorher_da, str(echt))
 
 pruefen("der Riegel lehnt die echte Werkstatt ab", verweigert(echt))
-pruefen("und sie liegt danach immer noch da", echt.exists())
+pruefen("und sie liegt danach so da wie vorher", echt.exists() == vorher_da)
 pruefen("darf_weg() sagt dasselbe, ohne etwas zu tun",
         probenort.darf_weg(echt) is False)
 
@@ -54,7 +57,7 @@ for datei in ("gedaechtnis.db", "journal.jsonl", "ICH.md"):
     except probenort.Verweigert:
         abgelehnt = True
     pruefen(f"abgelehnt: werkstatt\\{datei}", abgelehnt)
-    if datei == "gedaechtnis.db":
+    if datei == "gedaechtnis.db" and pruefstand.bewohner_da():
         pruefen("  und sie liegt noch da", p.exists())
 
 
@@ -90,22 +93,28 @@ pruefen("ein nicht vorhandener Probenpfad ist kein Fehler", True)
 # ------------------------------- 3. Die gewachsenen Ordner in der Werkstatt
 print("\nDie Probenordner, die es in der Werkstatt schon gibt")
 
-gewachsen = echt / "_riegel_probe"
-gewachsen.mkdir(exist_ok=True)
-(gewachsen / "x.txt").write_text("x", encoding="utf-8")
-pruefen("werkstatt\\_riegel_probe darf weg (Unterstrich)",
-        probenort.darf_weg(gewachsen) is True)
-probenort.wegraeumen(gewachsen)
-pruefen("und ist weg", not gewachsen.exists())
+if pruefstand.bewohner_da():
+    gewachsen = echt / "_riegel_probe"
+    gewachsen.mkdir(exist_ok=True)
+    (gewachsen / "x.txt").write_text("x", encoding="utf-8")
+    pruefen("werkstatt\\_riegel_probe darf weg (Unterstrich)",
+            probenort.darf_weg(gewachsen) is True)
+    probenort.wegraeumen(gewachsen)
+    pruefen("und ist weg", not gewachsen.exists())
+else:
+    print("  --  ein echter Probenordner: hier wohnt kein Bewohner")
 
 # Aber NICHT die echten Unterordner der Werkstatt.
 for echter in ("werkzeuge", "gedaechtnis", "sitzungen", "eingang", "antraege"):
     pruefen(f"abgelehnt: werkstatt\\{echter} (kein Unterstrich)",
             verweigert(echt / echter))
-pruefen("werkzeuge liegen noch da",
-        (echt / "werkzeuge").exists() and
-        len(list((echt / "werkzeuge").glob("*.py"))) >= 10,
-        f"{len(list((echt / 'werkzeuge').glob('*.py')))} Werkzeuge")
+if pruefstand.bewohner_da():
+    pruefen("werkzeuge liegen noch da",
+            (echt / "werkzeuge").exists() and
+            len(list((echt / "werkzeuge").glob("*.py"))) >= 10,
+            f"{len(list((echt / 'werkzeuge').glob('*.py')))} Werkzeuge")
+else:
+    print("  --  was in der Werkstatt liegt: hier wohnt kein Bewohner")
 
 # Und nicht tiefer als eine Ebene - werkstatt\werkzeuge\_x ist nicht
 # "ein Probenordner der Werkstatt".

@@ -16,7 +16,6 @@ import json
 import os
 import shutil
 import sys
-import tempfile
 
 # Ort der Datei als Anker - sonst schriebe ein Aufruf aus einem fremden
 # Arbeitsverzeichnis heraus ausserhalb der Werkstatt.
@@ -211,96 +210,101 @@ def selbsttest():
     protokoll.pruefe(not liegt_in_werkstatt(os.path.join(WERKSTATT_ORDNER, "..", "ausserhalb.jsonl")),
                      "Pfad ausserhalb der Werkstatt wird abgelehnt")
 
-    testordner = tempfile.mkdtemp(prefix="platzverlauf-test-", dir=WERKSTATT_ORDNER)
+    # A fixed folder, emptied file by file rather than removed: a tool may not
+    # delete anything (werkzeuge.VERBOTEN), and removing the folder here made
+    # this self-test fail his own acceptance. erinnern and stimme_hoeren do
+    # it the same way.
+    testordner = os.path.join(WERKSTATT_ORDNER, "_platzverlauf_selbsttest")
+    os.makedirs(testordner, exist_ok=True)
+    for name in ("verlauf.jsonl", "alt.jsonl"):
+        open(os.path.join(testordner, name), "w", encoding="utf-8").close()
+    testdatei = os.path.join(testordner, "verlauf.jsonl")
+
+    # 3. Ein leerer Verlauf stuerzt nicht ab.
+    protokoll.pruefe(eintraege_lesen(testdatei) == [], "Leerer Verlauf liefert leere Liste")
+    protokoll.pruefe(trend_bestimmen([]) == ("unbekannt", 0.0), "Ohne Eintraege ist der Trend unbekannt")
+
+    # 4. Schreiben und Lesen passen zusammen.
+    eintrag_anhaengen(100.0, zeitstempel="2026-01-01T10:00:00", verlaufsdatei=testdatei)
+    eintrag_anhaengen(97.5, zeitstempel="2026-01-01T11:00:00", verlaufsdatei=testdatei)
+    gelesen = eintraege_lesen(testdatei)
+    protokoll.pruefe(len(gelesen) == 2, "Zwei geschriebene Eintraege werden gelesen")
+    protokoll.pruefe(gelesen[0]["frei_gb"] == 100.0 and gelesen[1]["zeit"] == "2026-01-01T11:00:00",
+                     "Inhalt der Eintraege bleibt erhalten")
+
+    # 5. Kaputte Zeilen werden uebergangen, gute bleiben.
+    with open(testdatei, "a", encoding="utf-8") as datei:
+        datei.write("das ist kein json\n")
+        datei.write("\n")
+        datei.write('{"zeit": "2026-01-01T11:30:00"}\n')  # frei_gb fehlt
+    protokoll.pruefe(len(eintraege_lesen(testdatei)) == 2, "Kaputte Zeilen werden uebergangen")
+
+    # 5b. Altbestand mit Unix-Zeit ("ts") wird uebernommen, nicht verworfen.
+    altdatei = os.path.join(testordner, "alt.jsonl")
+    with open(altdatei, "a", encoding="utf-8") as datei:
+        datei.write('{"ts": 1789164872.0, "frei_gb": 1540}\n')
+    alt = eintraege_lesen(altdatei)
+    protokoll.pruefe(len(alt) == 1 and alt[0]["frei_gb"] == 1540,
+                     "Altbestand im ts-Format wird gelesen")
+    protokoll.pruefe(bool(alt) and alt[0]["zeit"].startswith("2026-"),
+                     "Unix-Zeit wird in einen Zeitstempel uebersetzt")
+
+    # 6. Fallender Platz.
+    eintrag_anhaengen(94.0, zeitstempel="2026-01-01T12:00:00", verlaufsdatei=testdatei)
+    befund, veraenderung = trend_bestimmen(eintraege_lesen(testdatei))
+    protokoll.pruefe(befund == "faellt", "Fallender Platz wird als 'faellt' erkannt")
+    protokoll.pruefe(veraenderung == -6.0, "Veraenderung wird richtig berechnet (%.2f)" % veraenderung)
+
+    # 7. Steigender Platz.
+    steigend = [
+        {"zeit": "2026-01-02T10:00:00", "frei_gb": 50.0},
+        {"zeit": "2026-01-02T11:00:00", "frei_gb": 58.25},
+    ]
+    protokoll.pruefe(trend_bestimmen(steigend)[0] == "steigt", "Steigender Platz wird als 'steigt' erkannt")
+
+    # 8. Kleine Schwankung unter der Schwelle gilt als gleichbleibend.
+    gleichbleibend = [
+        {"zeit": "2026-01-03T10:00:00", "frei_gb": 50.0},
+        {"zeit": "2026-01-03T11:00:00", "frei_gb": 50.2},
+        {"zeit": "2026-01-03T12:00:00", "frei_gb": 49.9},
+    ]
+    protokoll.pruefe(trend_bestimmen(gleichbleibend)[0] == "gleich", "Kleine Schwankung gilt als 'gleich'")
+
+    # 9. Ein einzelner Eintrag ergibt keinen Trend.
+    protokoll.pruefe(trend_bestimmen([{"zeit": "x", "frei_gb": 1.0}])[0] == "unbekannt",
+                     "Ein einzelner Eintrag ergibt keinen Trend")
+
+    # 10. Das Fenster begrenzt wirklich auf die letzten Eintraege.
+    letzte_zwei = eintraege_lesen(testdatei, anzahl=2)
+    protokoll.pruefe(len(letzte_zwei) == 2 and letzte_zwei[-1]["frei_gb"] == 94.0,
+                     "Fenster liefert die letzten Eintraege")
+
+    # 11. Schreiben ausserhalb der Werkstatt wird verweigert.
+    verbotener_pfad = os.path.join(WERKSTATT_ORDNER, "..", "verboten.jsonl")
     try:
-        testdatei = os.path.join(testordner, "verlauf.jsonl")
+        eintrag_anhaengen(1.0, verlaufsdatei=verbotener_pfad)
+        verweigert = False
+    except ValueError:
+        verweigert = True
+    protokoll.pruefe(verweigert, "Schreiben ausserhalb der Werkstatt wird verweigert")
+    protokoll.pruefe(not os.path.exists(os.path.abspath(verbotener_pfad)),
+                     "Es entstand keine Datei ausserhalb der Werkstatt")
 
-        # 3. Ein leerer Verlauf stuerzt nicht ab.
-        protokoll.pruefe(eintraege_lesen(testdatei) == [], "Leerer Verlauf liefert leere Liste")
-        protokoll.pruefe(trend_bestimmen([]) == ("unbekannt", 0.0), "Ohne Eintraege ist der Trend unbekannt")
+    # 12. Der ganze Ablauf laeuft durch und liefert einen lesbaren Bericht.
+    bericht = messen_und_berichten(fenster=3, verlaufsdatei=testdatei)
+    protokoll.pruefe("Frei auf" in bericht and "Trend" in bericht,
+                     "Bericht enthaelt Messwert und Trend")
+    protokoll.pruefe(len(eintraege_lesen(testdatei)) == 4,
+                     "Normalbetrieb haengt genau einen Eintrag an")
 
-        # 4. Schreiben und Lesen passen zusammen.
-        eintrag_anhaengen(100.0, zeitstempel="2026-01-01T10:00:00", verlaufsdatei=testdatei)
-        eintrag_anhaengen(97.5, zeitstempel="2026-01-01T11:00:00", verlaufsdatei=testdatei)
-        gelesen = eintraege_lesen(testdatei)
-        protokoll.pruefe(len(gelesen) == 2, "Zwei geschriebene Eintraege werden gelesen")
-        protokoll.pruefe(gelesen[0]["frei_gb"] == 100.0 and gelesen[1]["zeit"] == "2026-01-01T11:00:00",
-                         "Inhalt der Eintraege bleibt erhalten")
+    # 13. Nur-Lesen misst nicht und schreibt nichts.
+    messen_und_berichten(fenster=3, verlaufsdatei=testdatei, messen=False)
+    protokoll.pruefe(len(eintraege_lesen(testdatei)) == 4, "Nur-Lesen haengt nichts an")
 
-        # 5. Kaputte Zeilen werden uebergangen, gute bleiben.
-        with open(testdatei, "a", encoding="utf-8") as datei:
-            datei.write("das ist kein json\n")
-            datei.write("\n")
-            datei.write('{"zeit": "2026-01-01T11:30:00"}\n')  # frei_gb fehlt
-        protokoll.pruefe(len(eintraege_lesen(testdatei)) == 2, "Kaputte Zeilen werden uebergangen")
 
-        # 5b. Altbestand mit Unix-Zeit ("ts") wird uebernommen, nicht verworfen.
-        altdatei = os.path.join(testordner, "alt.jsonl")
-        with open(altdatei, "a", encoding="utf-8") as datei:
-            datei.write('{"ts": 1789164872.0, "frei_gb": 1540}\n')
-        alt = eintraege_lesen(altdatei)
-        protokoll.pruefe(len(alt) == 1 and alt[0]["frei_gb"] == 1540,
-                         "Altbestand im ts-Format wird gelesen")
-        protokoll.pruefe(bool(alt) and alt[0]["zeit"].startswith("2026-"),
-                         "Unix-Zeit wird in einen Zeitstempel uebersetzt")
-
-        # 6. Fallender Platz.
-        eintrag_anhaengen(94.0, zeitstempel="2026-01-01T12:00:00", verlaufsdatei=testdatei)
-        befund, veraenderung = trend_bestimmen(eintraege_lesen(testdatei))
-        protokoll.pruefe(befund == "faellt", "Fallender Platz wird als 'faellt' erkannt")
-        protokoll.pruefe(veraenderung == -6.0, "Veraenderung wird richtig berechnet (%.2f)" % veraenderung)
-
-        # 7. Steigender Platz.
-        steigend = [
-            {"zeit": "2026-01-02T10:00:00", "frei_gb": 50.0},
-            {"zeit": "2026-01-02T11:00:00", "frei_gb": 58.25},
-        ]
-        protokoll.pruefe(trend_bestimmen(steigend)[0] == "steigt", "Steigender Platz wird als 'steigt' erkannt")
-
-        # 8. Kleine Schwankung unter der Schwelle gilt als gleichbleibend.
-        gleichbleibend = [
-            {"zeit": "2026-01-03T10:00:00", "frei_gb": 50.0},
-            {"zeit": "2026-01-03T11:00:00", "frei_gb": 50.2},
-            {"zeit": "2026-01-03T12:00:00", "frei_gb": 49.9},
-        ]
-        protokoll.pruefe(trend_bestimmen(gleichbleibend)[0] == "gleich", "Kleine Schwankung gilt als 'gleich'")
-
-        # 9. Ein einzelner Eintrag ergibt keinen Trend.
-        protokoll.pruefe(trend_bestimmen([{"zeit": "x", "frei_gb": 1.0}])[0] == "unbekannt",
-                         "Ein einzelner Eintrag ergibt keinen Trend")
-
-        # 10. Das Fenster begrenzt wirklich auf die letzten Eintraege.
-        letzte_zwei = eintraege_lesen(testdatei, anzahl=2)
-        protokoll.pruefe(len(letzte_zwei) == 2 and letzte_zwei[-1]["frei_gb"] == 94.0,
-                         "Fenster liefert die letzten Eintraege")
-
-        # 11. Schreiben ausserhalb der Werkstatt wird verweigert.
-        verbotener_pfad = os.path.join(WERKSTATT_ORDNER, "..", "verboten.jsonl")
-        try:
-            eintrag_anhaengen(1.0, verlaufsdatei=verbotener_pfad)
-            verweigert = False
-        except ValueError:
-            verweigert = True
-        protokoll.pruefe(verweigert, "Schreiben ausserhalb der Werkstatt wird verweigert")
-        protokoll.pruefe(not os.path.exists(os.path.abspath(verbotener_pfad)),
-                         "Es entstand keine Datei ausserhalb der Werkstatt")
-
-        # 12. Der ganze Ablauf laeuft durch und liefert einen lesbaren Bericht.
-        bericht = messen_und_berichten(fenster=3, verlaufsdatei=testdatei)
-        protokoll.pruefe("Frei auf" in bericht and "Trend" in bericht,
-                         "Bericht enthaelt Messwert und Trend")
-        protokoll.pruefe(len(eintraege_lesen(testdatei)) == 4,
-                         "Normalbetrieb haengt genau einen Eintrag an")
-
-        # 13. Nur-Lesen misst nicht und schreibt nichts.
-        messen_und_berichten(fenster=3, verlaufsdatei=testdatei, messen=False)
-        protokoll.pruefe(len(eintraege_lesen(testdatei)) == 4, "Nur-Lesen haengt nichts an")
-
-    finally:
-        shutil.rmtree(testordner, ignore_errors=True)
-
-    # 14. Der Test raeumt hinter sich auf und laesst nichts liegen.
-    protokoll.pruefe(not os.path.isdir(testordner), "Testordner wurde wieder aufgeraeumt")
+    # 14. Der Test laesst nichts liegen ausser seinen zwei Dateien.
+    protokoll.pruefe(sorted(os.listdir(testordner)) == ["alt.jsonl", "verlauf.jsonl"],
+                     "Im Testordner liegt nur, was der Test selbst braucht")
 
     if protokoll.fehlschlaege:
         print("Selbsttest fehlgeschlagen: %d von %d Pruefungen" % (

@@ -7,6 +7,9 @@ import sys
 import time
 from pathlib import Path
 
+import pruefstand
+pruefstand.braucht_bewohner("gespraech")
+
 GESPRAECH = Path(__file__).parent / "werkstatt" / "gespraech"
 ok_alle = []
 

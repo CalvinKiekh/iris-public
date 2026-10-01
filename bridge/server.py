@@ -658,278 +658,371 @@ class Handler(BaseHTTPRequestHandler):
         p = urlparse(self.path).path
         # Heartbeats are checked against the weaker ingest token.
         if p == "/api/heartbeat":
-            if not self._authed_ingest():
-                return self._json({"error": "unauthorized"}, 401)
-            b = self._body()
-            r = heartbeat.beat(b.get("name", ""), b.get("host", ""),
-                               status=b.get("status", "ok"),
-                               detail=b.get("detail"),
-                               version=b.get("version", ""),
-                               interval=b.get("interval", 60))
-            return self._json(r, 200 if r.get("ok") else 400)
-
+            return self._post_heartbeat()
         if not self._authed():
             return self._json({"error": "unauthorized"}, 401)
 
-        # An upload is the file itself, not JSON: raw body, name in a header.
+        # These two carry the file itself, not JSON, so they come before the
+        # body is read.
         up = p.strip("/").split("/")
         if len(up) == 4 and up[:2] == ["api", "sessions"] and up[3] == "upload":
-            if not self.manager.get(up[2]):
-                return self._json({"error": "unknown session"}, 404)
-            n = int(self.headers.get("Content-Length") or 0)
-            if n > uploads.MAX_BYTES:
-                return self._json({"error": "Datei zu groß"}, 413)
-            from urllib.parse import unquote
-            r = uploads.save(up[2], unquote(self.headers.get("X-Filename", "")),
-                             self.rfile.read(n), self.headers.get("Content-Type", ""))
-            return self._json(r, 201 if "path" in r else 400)
+            return self._post_upload(up[2])
+        if len(up) == 5 and up[:2] == ["api", "sessions"] and up[3] == "eingang":
+            return self._post_eingang(up[2], up[4])
 
+        body = self._body()
+        route = self.POST_ROUTEN.get(p)
+        if route:
+            return route(self, body)
+        for prefix, route in self.POST_PRAEFIXE:
+            if p.startswith(prefix):
+                return route(self, p[len(prefix):], body)
+        return self._json({"error": "not found"}, 404)
+
+    # ---------- POST: before the body is read ----------
+
+    def _post_heartbeat(self):
+        if not self._authed_ingest():
+            return self._json({"error": "unauthorized"}, 401)
+        b = self._body()
+        r = heartbeat.beat(b.get("name", ""), b.get("host", ""),
+                           status=b.get("status", "ok"),
+                           detail=b.get("detail"),
+                           version=b.get("version", ""),
+                           interval=b.get("interval", 60))
+        return self._json(r, 200 if r.get("ok") else 400)
+
+    def _post_upload(self, key):
+        # An upload is the file itself, not JSON: raw body, name in a header.
+        if not self.manager.get(key):
+            return self._json({"error": "unknown session"}, 404)
+        n = int(self.headers.get("Content-Length") or 0)
+        if n > uploads.MAX_BYTES:
+            return self._json({"error": "Datei zu groß"}, 413)
+        from urllib.parse import unquote
+        r = uploads.save(key, unquote(self.headers.get("X-Filename", "")),
+                         self.rfile.read(n), self.headers.get("Content-Type", ""))
+        return self._json(r, 201 if "path" in r else 400)
+
+    def _post_eingang(self, key, ticket):
         # The sealed blob itself, landing in a session's working directory.
         # Raw body like an upload, and streamed rather than read whole: this
         # is the path a 124-MB spreadsheet takes.
-        if len(up) == 5 and up[:2] == ["api", "sessions"] and up[3] == "eingang":
-            s = self.manager.get(up[2])
-            if not s:
-                return self._json({"error": "unknown session"}, 404)
-            n = int(self.headers.get("Content-Length") or 0)
-            if n > transfer.MAX_BYTES + transfer.BLOCK:
-                return self._json({"ok": False, "grund": "Zu groß"}, 413)
-            r = transfer.oeffnen(up[4], transfer.Begrenzt(self.rfile, n),
-                                 getattr(s, "cwd", "") or "")
-            return self._json(r, 201 if r.get("ok") else 400)
+        s = self.manager.get(key)
+        if not s:
+            return self._json({"error": "unknown session"}, 404)
+        n = int(self.headers.get("Content-Length") or 0)
+        if n > transfer.MAX_BYTES + transfer.BLOCK:
+            return self._json({"ok": False, "grund": "Zu groß"}, 413)
+        r = transfer.oeffnen(ticket, transfer.Begrenzt(self.rfile, n),
+                             getattr(s, "cwd", "") or "")
+        return self._json(r, 201 if r.get("ok") else 400)
 
-        body = self._body()
+    # ---------- POST: fixed paths ----------
 
-        if p == "/api/hooks":
-            # Called by hooks/iris_hook.py from inside a Claude Code session
-            # in a terminal. PreToolUse may park here until the phone answers;
-            # the server is threaded, so that holds up nobody else.
-            return self._json({"output": self.manager.terminals.handle(body)})
-        if p.startswith("/api/sessions/") and p.endswith("/ausgang"):
-            # Seal one file for a named machine. The key comes back here and
-            # nowhere else - it is not stored, not logged, not put in a card.
-            s = self.manager.get(p[len("/api/sessions/"):-len("/ausgang")])
-            if not s:
-                return self._json({"error": "unknown session"}, 404)
-            r = transfer.versiegeln(getattr(s, "cwd", "") or "", s.key,
-                                    body.get("ziel", ""), body.get("path", ""))
-            return self._json(r, 200 if r.get("ok") else 400)
-        if p == "/api/eingang/schluessel":
-            # The key arrives before its blob and waits in memory. Handing
-            # back a ticket keeps the key out of the URL of the upload that
-            # follows, where it would end up in every access log there is.
-            r = transfer.schluessel_annehmen(body.get("sitzung", ""),
-                                             body.get("name", ""),
-                                             body.get("bloecke", 0),
-                                             body.get("schluessel", ""))
-            return self._json(r, 200 if r.get("ok") else 400)
-        if p == "/api/aktualisieren":
-            # Beenden, aktualisieren, zurückholen. Läuft hier durch statt in
-            # einem Hintergrundfaden: das Ganze dauert Sekunden, und ein
-            # halbes Ergebnis wäre schlimmer als eine wartende Anfrage.
-            return self._json(aktualisieren.lauf(self.manager))
-        if p == "/api/ausgang/weg":
-            # Arrived, so the spool copy has no reason to exist. Swept on its
-            # own after an hour too, for the transfers that never finish.
-            transfer.ausgang_weg(body.get("id", ""))
-            return self._json({"ok": True})
-        if p.startswith("/api/resident/"):
-            # What the app puts into the resident's workspace.
-            r = self._resident()
-            if not r.present():
-                return self._json({"error": "Hier wohnt kein Bewohner"}, 404)
-            what = p[len("/api/resident/"):]
-            if what == "stop":
-                ok, err = r.stop(bool(body.get("on", True)))
-            elif what == "wake":
-                ok, err = r.wake()
-            elif what == "say":
-                ok, err = r.say(body.get("text", ""))
-            elif what == "decide":
-                ok, err = r.decide(body.get("id", ""), bool(body.get("allow")))
-            elif what == "talk":
-                gid, err = r.talk(body.get("text", ""), body.get("id"), bool(body.get("draft")),
-                                  body.get("zu"), body.get("von"), body.get("aufnahme"),
-                                  stimme=body.get("stimme"))
-                return self._json({"ok": bool(gid), "id": gid, "error": err}, 200 if gid else 409)
-            elif what == "file":
-                ok, err = r.write(body.get("path", ""), body.get("text", ""))
-            elif what == "eingang":
-                ok, err = r.put_in(body.get("name", ""), body.get("data", ""))
-            elif what == "memory":
-                ok, err = r.change_memory(body.get("id", ""), body.get("aktion", ""), body.get("text", ""))
-                return self._json({"ok": ok, "error": err, "pending": r.memory_changes()}, 200 if ok else 409)
-            else:
-                return self._json({"error": "not found"}, 404)
-            return self._json({"ok": ok, "error": err, "resident": r.state()}, 200 if ok else 409)
-        if p == "/api/push/register":
-            r = push.register(body.get("token", ""), body.get("env", "sandbox"),
-                              body.get("name", ""))
-            return self._json(r, 200 if r.get("ok") else 400)
-        if p == "/api/push/test":
-            # Synchronous on purpose: whoever tests wants Apple's answer.
-            if not push.configured():
-                return self._json({"error": "Push ist nicht eingerichtet"}, 409)
-            return self._json({"results": push.deliver({
-                "aps": {"alert": {"title": "iris", "subtitle": "Probe",
-                                  "body": "Mitteilungen kommen an."}, "sound": "default"},
-                "iris": {"kind": "test"}})})
-        if p == "/api/terminals/away":
-            return self._json({"away": self.manager.terminals.set_away(
-                bool(body.get("away")))})
-        if p == "/api/services/forget":
-            return self._json(heartbeat.forget(body.get("id", "")))
-        if p == "/api/inventory/scan":
-            # Full sweeps take the better part of a minute, so this returns
-            # immediately and the client watches ?what=state.
-            path = body.get("project")
-            if path:
-                return self._json(inventory.refresh_project(path))
-            started = inventory.scan_async()
-            return self._json({"started": started, "state": inventory.state()},
-                              202 if started else 409)
-        if p == "/api/config/file":
-            r = configs.write(body.get("path", ""), body.get("content", ""),
-                              body.get("project") or None)
-            return self._json(r, 200 if r.get("ok") else 400)
-        if p == "/api/wachen":
-            ziel = (body.get("ziel") or "").strip()
-            sitzung = (body.get("sitzung") or "").strip()
-            # Nicht `vorarbeiter` nennen: derselbe Name ist in dieser Datei
-            # das Modul, und eine Zuweisung macht ihn fuer die ganze Funktion
-            # lokal - der Aufruf weiter oben lief danach in einen
-            # UnboundLocalError, und die Bruecke antwortete gar nicht mehr.
-            aufseher = (body.get("vorarbeiter") or "").strip()
-            if not ziel or not sitzung or not aufseher:
-                return self._json({"error": "ziel, sitzung und vorarbeiter noetig"}, 400)
-            if not self.manager.get(sitzung):
-                return self._json({"error": f"unbekannte Sitzung: {sitzung}"}, 404)
-            return self._json({"wache": wachen.neu(
-                ziel, sitzung, aufseher,
-                mass=body.get("mass") or "", budget=body.get("budget") or 20)}, 201)
-        if p.startswith("/api/wachen/") and p.endswith("/runde"):
-            wid = p[len("/api/wachen/"):-len("/runde")]
+    def _post_hooks(self, body):
+        # Called by hooks/iris_hook.py from inside a Claude Code session
+        # in a terminal. PreToolUse may park here until the phone answers;
+        # the server is threaded, so that holds up nobody else.
+        return self._json({"output": self.manager.terminals.handle(body)})
+
+    def _post_schluessel(self, body):
+        # The key arrives before its blob and waits in memory. Handing
+        # back a ticket keeps the key out of the URL of the upload that
+        # follows, where it would end up in every access log there is.
+        r = transfer.schluessel_annehmen(body.get("sitzung", ""),
+                                         body.get("name", ""),
+                                         body.get("bloecke", 0),
+                                         body.get("schluessel", ""))
+        return self._json(r, 200 if r.get("ok") else 400)
+
+    def _post_aktualisieren(self, body):
+        # Beenden, aktualisieren, zurückholen. Läuft hier durch statt in
+        # einem Hintergrundfaden: das Ganze dauert Sekunden, und ein
+        # halbes Ergebnis wäre schlimmer als eine wartende Anfrage.
+        return self._json(aktualisieren.lauf(self.manager))
+
+    def _post_ausgang_weg(self, body):
+        # Arrived, so the spool copy has no reason to exist. Swept on its
+        # own after an hour too, for the transfers that never finish.
+        transfer.ausgang_weg(body.get("id", ""))
+        return self._json({"ok": True})
+
+    def _post_push_register(self, body):
+        r = push.register(body.get("token", ""), body.get("env", "sandbox"),
+                          body.get("name", ""))
+        return self._json(r, 200 if r.get("ok") else 400)
+
+    def _post_push_test(self, body):
+        # Synchronous on purpose: whoever tests wants Apple's answer.
+        if not push.configured():
+            return self._json({"error": "Push ist nicht eingerichtet"}, 409)
+        return self._json({"results": push.deliver({
+            "aps": {"alert": {"title": "iris", "subtitle": "Probe",
+                              "body": "Mitteilungen kommen an."}, "sound": "default"},
+            "iris": {"kind": "test"}})})
+
+    def _post_terminals_away(self, body):
+        return self._json({"away": self.manager.terminals.set_away(
+            bool(body.get("away")))})
+
+    def _post_services_forget(self, body):
+        return self._json(heartbeat.forget(body.get("id", "")))
+
+    def _post_inventory_scan(self, body):
+        # Full sweeps take the better part of a minute, so this returns
+        # immediately and the client watches ?what=state.
+        path = body.get("project")
+        if path:
+            return self._json(inventory.refresh_project(path))
+        started = inventory.scan_async()
+        return self._json({"started": started, "state": inventory.state()},
+                          202 if started else 409)
+
+    def _post_config_file(self, body):
+        r = configs.write(body.get("path", ""), body.get("content", ""),
+                          body.get("project") or None)
+        return self._json(r, 200 if r.get("ok") else 400)
+
+    def _post_wachen(self, body):
+        ziel = (body.get("ziel") or "").strip()
+        sitzung = (body.get("sitzung") or "").strip()
+        # Nicht `vorarbeiter` nennen: derselbe Name ist in dieser Datei
+        # das Modul, und eine Zuweisung macht ihn fuer die ganze Funktion
+        # lokal - der Aufruf weiter oben lief danach in einen
+        # UnboundLocalError, und die Bruecke antwortete gar nicht mehr.
+        aufseher = (body.get("vorarbeiter") or "").strip()
+        if not ziel or not sitzung or not aufseher:
+            return self._json({"error": "ziel, sitzung und vorarbeiter noetig"}, 400)
+        if not self.manager.get(sitzung):
+            return self._json({"error": f"unbekannte Sitzung: {sitzung}"}, 404)
+        return self._json({"wache": wachen.neu(
+            ziel, sitzung, aufseher,
+            mass=body.get("mass") or "", budget=body.get("budget") or 20)}, 201)
+
+    def _post_shortcuts(self, body):
+        rows = body.get("shortcuts")
+        if not isinstance(rows, list):
+            return self._json({"error": "shortcuts muss eine Liste sein"}, 400)
+        shortcuts.save(rows)
+        return self._json({"shortcuts": shortcuts.load()})
+
+    def _post_sessions(self, body):
+        rolle = (body.get("rolle") or "").strip()
+        cwd = body.get("cwd", "")
+        fortsetzen = body.get("resume")
+        if rolle == "vorarbeiter" and not cwd:
+            # Er bekommt sein eigenes Verzeichnis, nicht irgendeines: dort
+            # steht, was fuer die Aufsicht gilt, und nichts von der Arbeit.
+            cwd = vorarbeiter.raum()
+            # Und er setzt fort, woran er zuletzt war.
+            fortsetzen = fortsetzen or vorarbeiter.zuletzt()
+        s, err = self.manager.create(
+            cwd, model=body.get("model"),
+            permission_mode=body.get("permission_mode"),
+            resume=fortsetzen, fork=bool(body.get("fork")),
+            rolle=rolle)
+        if not s:
+            return self._json({"error": err}, 400)
+        return self._json({"session": s.describe()}, 201)
+
+    # ---------- POST: paths with a part that varies ----------
+
+    def _post_resident(self, what, body):
+        # What the app puts into the resident's workspace.
+        r = self._resident()
+        if not r.present():
+            return self._json({"error": "Hier wohnt kein Bewohner"}, 404)
+        if what == "talk":
+            gid, err = r.talk(body.get("text", ""), body.get("id"), bool(body.get("draft")),
+                              body.get("zu"), body.get("von"), body.get("aufnahme"),
+                              stimme=body.get("stimme"))
+            return self._json({"ok": bool(gid), "id": gid, "error": err}, 200 if gid else 409)
+        if what == "memory":
+            ok, err = r.change_memory(body.get("id", ""), body.get("aktion", ""), body.get("text", ""))
+            return self._json({"ok": ok, "error": err, "pending": r.memory_changes()}, 200 if ok else 409)
+        # The rest answer alike: done or not, and the resident as it is now.
+        tun = {
+            "stop": lambda: r.stop(bool(body.get("on", True))),
+            "wake": r.wake,
+            "say": lambda: r.say(body.get("text", "")),
+            "decide": lambda: r.decide(body.get("id", ""), bool(body.get("allow"))),
+            "file": lambda: r.write(body.get("path", ""), body.get("text", "")),
+            "eingang": lambda: r.put_in(body.get("name", ""), body.get("data", "")),
+        }.get(what)
+        if not tun:
+            return self._json({"error": "not found"}, 404)
+        ok, err = tun()
+        return self._json({"ok": ok, "error": err, "resident": r.state()}, 200 if ok else 409)
+
+    def _post_wache(self, rest, body):
+        # /api/wachen/<id>/runde and /api/wachen/<id>/ende
+        wid, _, what = rest.rpartition("/")
+        if what == "runde":
             w = wachen.runde(wid, body.get("wert"), body.get("notiz") or "")
             if not w:
                 return self._json({"error": "unbekannte Wache"}, 404)
             # Was der Vorarbeiter jetzt wissen muss, ohne nachzurechnen.
             return self._json({"wache": w, "stillstand": wachen.stillstand(w),
                                "budget_verbraucht": wachen.budget_verbraucht(w)})
-        if p.startswith("/api/wachen/") and p.endswith("/ende"):
-            wid = p[len("/api/wachen/"):-len("/ende")]
+        if what == "ende":
             w = wachen.beenden(wid, body.get("grund") or "")
             if not w:
                 return self._json({"error": "unbekannte Wache"}, 404)
             return self._json({"wache": w})
-        if p == "/api/shortcuts":
-            rows = body.get("shortcuts")
-            if not isinstance(rows, list):
-                return self._json({"error": "shortcuts muss eine Liste sein"}, 400)
-            shortcuts.save(rows)
-            return self._json({"shortcuts": shortcuts.load()})
-        if p == "/api/sessions":
-            rolle = (body.get("rolle") or "").strip()
-            cwd = body.get("cwd", "")
-            fortsetzen = body.get("resume")
-            if rolle == "vorarbeiter" and not cwd:
-                # Er bekommt sein eigenes Verzeichnis, nicht irgendeines: dort
-                # steht, was fuer die Aufsicht gilt, und nichts von der Arbeit.
-                cwd = vorarbeiter.raum()
-                # Und er setzt fort, woran er zuletzt war.
-                fortsetzen = fortsetzen or vorarbeiter.zuletzt()
-            s, err = self.manager.create(
-                cwd, model=body.get("model"),
-                permission_mode=body.get("permission_mode"),
-                resume=fortsetzen, fork=bool(body.get("fork")),
-                rolle=rolle)
-            if not s:
-                return self._json({"error": err}, 400)
-            return self._json({"session": s.describe()}, 201)
-
-        parts = p.strip("/").split("/")         # api/sessions/<key>/<action>
-        if len(parts) == 4 and parts[0] == "api" and parts[1] == "sessions":
-            key, action = parts[2], parts[3]
-            s = self.manager.get(key)
-            if not s:
-                return self._json({"error": "unknown session"}, 404)
-            terminal = getattr(s, "kind", "") == "terminal"
-            if terminal and action not in ("message", "permission", "interrupt", "mode", "keys", "title"):
-                from .terminals import NOT_POSSIBLE
-                return self._json({"error": NOT_POSSIBLE}, 409)
-            if action == "message":
-                text = (body.get("text") or "").strip()
-                attachments = uploads.resolve(body.get("attachments"))
-                if not text and not attachments:
-                    return self._json({"error": "leerer Text"}, 400)
-                # The phone repeats a message it could not confirm - after a
-                # dropped connection the first attempt may have arrived. Its
-                # id makes the repeat harmless.
-                mid = str(body.get("id") or "")
-                seen = s.__dict__.setdefault("_message_ids", collections.OrderedDict())
-                if mid and mid in seen:
-                    return self._json(seen[mid], 200)
-                ok, err = s.send(text, attachments)
-                if ok and mid:
-                    seen[mid] = {"ok": True, "duplicate": True}
-                    while len(seen) > 500:
-                        seen.popitem(last=False)
-                if ok and terminal:
-                    # Typed into the tab at once, or waiting - and then the
-                    # note says until when, so nobody waits in the dark.
-                    typed = not s.waiting()
-                    return self._json({"ok": True, "queued": not typed,
-                                       "typed": typed,
-                                       "note": s.queued_note()}, 200 if typed else 202)
-                return self._json({"ok": ok, "error": err}, 200 if ok else 409)
-            if action == "permission":
-                ok, err = s.answer_permission(
-                    body.get("request_id", ""), bool(body.get("allow")),
-                    body.get("message", ""), answers=body.get("answers"))
-                return self._json({"ok": ok, "error": err}, 200 if ok else 409)
-            if action == "mode":
-                ok, err = s.set_permission_mode(body.get("mode", ""))
-                return self._json({"ok": ok, "error": err,
-                                   "mode": s.permission_mode},
-                                  200 if ok else 400)
-            if action == "model":
-                ok, err = s.set_model(body.get("model", ""))
-                return self._json({"ok": ok, "error": err},
-                                  200 if ok else 400)
-            if action == "profile":
-                ok, err = s.set_profile(body.get("profile", ""))
-                return self._json({"ok": ok, "error": err, "profile": s.profile},
-                                  200 if ok else 400)
-            if action == "system-prompt":
-                ok, err = s.set_system_prompt(body.get("prompt", ""))
-                return self._json({"ok": ok, "error": err},
-                                  200 if ok else 400)
-            if action == "control":
-                # Raw control channel, for anything a client needs that has
-                # no dedicated endpoint yet.
-                data, err = s.control(body.get("subtype", ""),
-                                      body.get("payload") or {})
-                return self._json({"response": data, "error": err},
-                                  200 if not err else 400)
-            if action == "title":
-                # A name for the session - empty gives the automatic one back.
-                name = names.put(s, body.get("title", ""))
-                if hasattr(s, "on_change"):
-                    s.on_change(s)
-                return self._json({"ok": True, "title": name or s.title})
-            if action == "keys":
-                if not hasattr(s, "press"):
-                    return self._json({"error": "nur bei Terminal-Sitzungen"}, 409)
-                ok, err = s.press(body.get("key", ""), body.get("text", ""))
-                return self._json({"ok": ok, "error": err}, 200 if ok else 409)
-            if action == "interrupt":
-                # Wie beim Moduswechsel: ok UND der Grund. "Es ging nicht" ohne
-                # Begruendung ist am Handy nicht von einem Fehler zu
-                # unterscheiden - und meistens ist der Grund harmlos.
-                ok, err = s.interrupt()
-                return self._json({"ok": ok, "error": err})
-            if action == "close":
-                return self._json({"ok": self.manager.close(key)})
         return self._json({"error": "not found"}, 404)
+
+    def _post_sitzung(self, rest, body):
+        # /api/sessions/<key>/<action>
+        if rest.endswith("/ausgang"):
+            return self._post_ausgang(rest[:-len("/ausgang")], body)
+        parts = rest.rstrip("/").split("/")
+        if len(parts) != 2:
+            return self._json({"error": "not found"}, 404)
+        key, action = parts
+        s = self.manager.get(key)
+        if not s:
+            return self._json({"error": "unknown session"}, 404)
+        if getattr(s, "kind", "") == "terminal" and action not in self.IM_TERMINAL:
+            from .terminals import NOT_POSSIBLE
+            return self._json({"error": NOT_POSSIBLE}, 409)
+        route = self.AKTION_ROUTEN.get(action)
+        if not route:
+            return self._json({"error": "not found"}, 404)
+        return route(self, s, body)
+
+    def _post_ausgang(self, key, body):
+        # Seal one file for a named machine. The key comes back here and
+        # nowhere else - it is not stored, not logged, not put in a card.
+        s = self.manager.get(key)
+        if not s:
+            return self._json({"error": "unknown session"}, 404)
+        r = transfer.versiegeln(getattr(s, "cwd", "") or "", s.key,
+                                body.get("ziel", ""), body.get("path", ""))
+        return self._json(r, 200 if r.get("ok") else 400)
+
+    # ---------- POST: one session ----------
+
+    def _aktion_message(self, s, body):
+        text = (body.get("text") or "").strip()
+        attachments = uploads.resolve(body.get("attachments"))
+        if not text and not attachments:
+            return self._json({"error": "leerer Text"}, 400)
+        # The phone repeats a message it could not confirm - after a
+        # dropped connection the first attempt may have arrived. Its
+        # id makes the repeat harmless.
+        mid = str(body.get("id") or "")
+        seen = s.__dict__.setdefault("_message_ids", collections.OrderedDict())
+        if mid and mid in seen:
+            return self._json(seen[mid], 200)
+        ok, err = s.send(text, attachments)
+        if ok and mid:
+            seen[mid] = {"ok": True, "duplicate": True}
+            while len(seen) > 500:
+                seen.popitem(last=False)
+        if ok and getattr(s, "kind", "") == "terminal":
+            # Typed into the tab at once, or waiting - and then the
+            # note says until when, so nobody waits in the dark.
+            typed = not s.waiting()
+            return self._json({"ok": True, "queued": not typed,
+                               "typed": typed,
+                               "note": s.queued_note()}, 200 if typed else 202)
+        return self._json({"ok": ok, "error": err}, 200 if ok else 409)
+
+    def _aktion_permission(self, s, body):
+        ok, err = s.answer_permission(
+            body.get("request_id", ""), bool(body.get("allow")),
+            body.get("message", ""), answers=body.get("answers"))
+        return self._json({"ok": ok, "error": err}, 200 if ok else 409)
+
+    def _aktion_mode(self, s, body):
+        ok, err = s.set_permission_mode(body.get("mode", ""))
+        return self._json({"ok": ok, "error": err,
+                           "mode": s.permission_mode},
+                          200 if ok else 400)
+
+    def _aktion_model(self, s, body):
+        ok, err = s.set_model(body.get("model", ""))
+        return self._json({"ok": ok, "error": err},
+                          200 if ok else 400)
+
+    def _aktion_profile(self, s, body):
+        ok, err = s.set_profile(body.get("profile", ""))
+        return self._json({"ok": ok, "error": err, "profile": s.profile},
+                          200 if ok else 400)
+
+    def _aktion_system_prompt(self, s, body):
+        ok, err = s.set_system_prompt(body.get("prompt", ""))
+        return self._json({"ok": ok, "error": err},
+                          200 if ok else 400)
+
+    def _aktion_control(self, s, body):
+        # Raw control channel, for anything a client needs that has
+        # no dedicated endpoint yet.
+        data, err = s.control(body.get("subtype", ""),
+                              body.get("payload") or {})
+        return self._json({"response": data, "error": err},
+                          200 if not err else 400)
+
+    def _aktion_title(self, s, body):
+        # A name for the session - empty gives the automatic one back.
+        name = names.put(s, body.get("title", ""))
+        if hasattr(s, "on_change"):
+            s.on_change(s)
+        return self._json({"ok": True, "title": name or s.title})
+
+    def _aktion_keys(self, s, body):
+        if not hasattr(s, "press"):
+            return self._json({"error": "nur bei Terminal-Sitzungen"}, 409)
+        ok, err = s.press(body.get("key", ""), body.get("text", ""))
+        return self._json({"ok": ok, "error": err}, 200 if ok else 409)
+
+    def _aktion_interrupt(self, s, body):
+        # Wie beim Moduswechsel: ok UND der Grund. "Es ging nicht" ohne
+        # Begruendung ist am Handy nicht von einem Fehler zu
+        # unterscheiden - und meistens ist der Grund harmlos.
+        ok, err = s.interrupt()
+        return self._json({"ok": ok, "error": err})
+
+    def _aktion_close(self, s, body):
+        return self._json({"ok": self.manager.close(s.key)})
+
+    POST_ROUTEN = {
+        "/api/hooks": _post_hooks,
+        "/api/eingang/schluessel": _post_schluessel,
+        "/api/aktualisieren": _post_aktualisieren,
+        "/api/ausgang/weg": _post_ausgang_weg,
+        "/api/push/register": _post_push_register,
+        "/api/push/test": _post_push_test,
+        "/api/terminals/away": _post_terminals_away,
+        "/api/services/forget": _post_services_forget,
+        "/api/inventory/scan": _post_inventory_scan,
+        "/api/config/file": _post_config_file,
+        "/api/wachen": _post_wachen,
+        "/api/shortcuts": _post_shortcuts,
+        "/api/sessions": _post_sessions,
+    }
+    POST_PRAEFIXE = (
+        ("/api/resident/", _post_resident),
+        ("/api/wachen/", _post_wache),
+        ("/api/sessions/", _post_sitzung),
+    )
+    AKTION_ROUTEN = {
+        "message": _aktion_message,
+        "permission": _aktion_permission,
+        "mode": _aktion_mode,
+        "model": _aktion_model,
+        "profile": _aktion_profile,
+        "system-prompt": _aktion_system_prompt,
+        "control": _aktion_control,
+        "title": _aktion_title,
+        "keys": _aktion_keys,
+        "interrupt": _aktion_interrupt,
+        "close": _aktion_close,
+    }
+    # What a terminal session can take from the phone; the rest needs a
+    # session this bridge runs itself.
+    IM_TERMINAL = ("message", "permission", "interrupt", "mode", "keys", "title")
 
     # ---------- SSE ----------
 

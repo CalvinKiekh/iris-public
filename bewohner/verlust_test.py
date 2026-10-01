@@ -16,6 +16,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pruefstand
+pruefstand.werkzeuge_einbinden()
+
 HIER = Path(__file__).parent
 sys.path.insert(0, str(HIER))
 import probenort
@@ -111,7 +114,10 @@ try:
                 bool(a) and "verloren" in str(a)
                 and "12. September" in str(a), str(a)[-52:])
     # Fragen ohne Terminbezug duerfen NICHT daran haengen.
-    for frage in ("Wie spät ist es?", "Wer belegt den meisten Speicher?"):
+    # The storage answer reads drive C: - only there is it an answer at all.
+    fragen = ("Wie spät ist es?",) + (("Wer belegt den meisten Speicher?",)
+                                      if sys.platform == "win32" else ())
+    for frage in fragen:
         a = gespraech.dienst_antwort(frage, echte, {"state": "wach"}, None)
         pruefen(f"unberuehrt: {frage[:28]}",
                 bool(a) and "Terminliste" not in str(a), str(a)[:44])

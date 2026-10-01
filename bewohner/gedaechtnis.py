@@ -126,7 +126,9 @@ def anlegen() -> None:
         if "von" not in spalten:
             v.execute("ALTER TABLE erinnerung ADD COLUMN von TEXT")
         _von_da.pop(str(DATENBANK), None)
-    AENDERUNGEN.mkdir(parents=True, exist_ok=True)
+    # No AENDERUNGEN.mkdir here: whoever writes there creates it (the bridge,
+    # aenderungen_einlesen), and a probe that bends only WERKSTATT and
+    # DATENBANK made the real folder through this line.
 
 
 # ---------------------------------------------------------------- Vektoren
